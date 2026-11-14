@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Música 1r ESO - Examen Adaptat de Vega</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+        }
+        .tab-active {
+            background-color: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- ========================================== -->
+    <!-- PORTAL GENERAL DE LAS 12 ASIGNATURAS       -->
+    <!-- ========================================== -->
+    <div id="subjects-hub" class="min-h-screen flex flex-col justify-between bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 text-white p-4 sm:p-8">
+        <!-- Barra superior con selector de idioma -->
+        <div class="max-w-6xl w-full mx-auto flex flex-wrap items-center justify-between gap-3 mb-4">
+            <span class="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold text-amber-300">
+                🎒 1r d'ESO • Curs Escolar
+            </span>
+            <div class="flex items-center bg-white/15 backdrop-blur-md p-1 rounded-xl border border-white/25">
+                <button id="hub-btn-va" onclick="setLanguage('va')" class="px-3 py-1.5 rounded-lg text-sm font-bold transition-all bg-white text-indigo-900 shadow-sm">
+                    Valencià
+                </button>
+                <button id="hub-btn-es" onclick="setLanguage('es')" class="px-3 py-1.5 rounded-lg text-sm font-bold text-white hover:bg-white/10 transition-all">
+                    Castellano (Ajuda)
+                </button>
+            </div>
+        </div>
+
+        <!-- Cabecera del Portal -->
+        <div class="max-w-6xl w-full mx-auto text-center mb-8 animate-fade-in">
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight mb-3">
+                <span data-va="Els Quaderns Interactius de" data-es="Los Cuadernos Interactivos de">Els Quaderns Interactius de</span>
+                <span class="text-amber-300 underline decoration-wavy decoration-amber-400/80">VEGA</span> ✨
+            </h1>
+            <p class="text-sm sm:text-lg text-indigo-200 max-w-2xl mx-auto" data-va="Tria una assignatura per a veure la seua portada i repassar al teu ritme!" data-es="¡Elige una asignatura para ver su portada y repasar a tu ritmo!">
+                Tria una assignatura per a veure la seua portada i repassar al teu ritme!
+            </p>
+        </div>
+
+        <!-- Cuadrícula de las 12 Asignaturas -->
+        <div id="subjects-grid" class="max-w-6xl w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 my-auto pb-6">
+            <!-- Se rellena dinámicamente con JS para mantener el código limpio y rápido -->
+        </div>
+
+        <p class="text-center text-xs text-indigo-300/80 font-medium mt-4" data-va="Totes les assignatures de 1r d'ESO en un sol lloc • Tu pots amb tot, Vega! 💪" data-es="Todas las asignaturas de 1º de ESO en un solo lugar • ¡Tú puedes con todo, Vega! 💪">
+            Totes les assignatures de 1r d'ESO en un sol lloc • Tu pots amb tot, Vega! 💪
+        </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PORTADA GENÉRICA PARA ASIGNATURAS (1-12)   -->
+    <!-- ========================================== -->
+    <div id="subject-cover-screen" class="hidden min-h-screen flex flex-col justify-between text-white p-4 sm:p-8 transition-all">
+        <!-- Barra superior -->
+        <div class="max-w-5xl w-full mx-auto flex items-center justify-between gap-3">
+            <button onclick="backToSubjectsHub()" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2 rounded-xl font-extrabold text-sm border border-white/30 flex items-center gap-2 transition-all shadow-md">
+                <span>🔙</span> <span data-va="Totes les Assignatures" data-es="Todas las Asignaturas">Totes les Assignatures</span>
+            </button>
+            <div class="flex items-center bg-white/20 backdrop-blur-md p-1 rounded-xl border border-white/30">
+                <button id="scover-btn-va" onclick="setLanguage('va')" class="px-3 py-1.5 rounded-lg text-sm font-bold transition-all bg-white text-slate-900 shadow-sm">
+                    Valencià
+                </button>
+                <button id="scover-btn-es" onclick="setLanguage('es')" class="px-3 py-1.5 rounded-lg text-sm font-bold text-white hover:bg-white/10 transition-all">
+                    Castellano (Ajuda)
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenido central de la portada de la asignatura -->
+        <div class="max-w-3xl w-full mx-auto my-auto text-center py-8 animate-fade-in">
+            <div id="scover-icon-box" class="w-28 h-28 sm:w-32 sm:h-32 mx-auto bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center text-6xl sm:text-7xl shadow-2xl border-2 border-white/40 mb-6">
+                📚
+            </div>
+
+            <span id="scover-badge" class="inline-block bg-white/25 backdrop-blur-sm text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full uppercase tracking-wider mb-4 border border-white/30">
+                1r d'ESO • Assignatura 1
+            </span>
+
+            <h1 id="scover-title" class="text-3xl sm:text-5xl font-black tracking-tight drop-shadow-md mb-4">
+                Assignatura
+            </h1>
+
+            <p id="scover-subtitle" class="text-base sm:text-xl text-white/90 max-w-xl mx-auto mb-8 font-medium leading-relaxed">
+                Quadern d'estudi adaptat per a Vega.
+            </p>
+
+            <!-- Tarjeta informativa / Estado del cuaderno -->
+            <div class="bg-white/95 text-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl max-w-xl mx-auto border-4 border-white/60">
+                <div class="flex items-center justify-center gap-2 text-indigo-600 font-extrabold text-sm uppercase tracking-wide mb-2">
+                    <span>✨</span> <span data-va="Espai d'Estudi de Vega" data-es="Espacio de Estudio de Vega">Espai d'Estudi de Vega</span> <span>✨</span>
+                </div>
+                <h2 id="scover-card-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-3" data-va="Portada llesta per a començar!" data-es="¡Portada lista para empezar!">
+                    Portada llesta per a començar!
+                </h2>
+                <p id="scover-card-desc" class="text-sm sm:text-base text-slate-600 mb-6 leading-relaxed" data-va="Quan tingues apunts, fitxes o un examen d'aquesta assignatura, els posarem ací amb explicacions senzilles, dibuixos i jocs." data-es="Cuando tengas apuntes, fichas o un examen de esta asignatura, los pondremos aquí con explicaciones sencillas, dibujos y juegos.">
+                    Quan tingues apunts, fitxes o un examen d'aquesta assignatura, els posarem ací amb explicacions senzilles, dibuixos i jocs.
+                </p>
+                <button onclick="backToSubjectsHub()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+                    <span>⬅️</span> <span data-va="Tornar al menú d'assignatures" data-es="Volver al menú de asignaturas">Tornar al menú d'assignatures</span>
+                </button>
+            </div>
+        </div>
+
+        <p class="text-center text-xs text-white/80 font-medium" data-va="Cuaderno interactivo de estudio para VEGA • 1r d'ESO" data-es="Cuaderno interactivo de estudio para VEGA • 1º de ESO">
+            Cuaderno interactivo de estudio para VEGA • 1r d'ESO
+        </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PORTADA ESPECÍFICA DE MÚSICA (ADAPTAT/TOTAL)-->
+    <!-- ========================================== -->
+    <div id="cover-screen" class="hidden min-h-screen flex flex-col justify-between bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white p-4 sm:p-8">
+        <!-- Barra superior portada con botón volver a asignaturas y selector de idioma -->
+        <div class="max-w-5xl w-full mx-auto flex items-center justify-between gap-3">
+            <button onclick="backToSubjectsHub()" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2 rounded-xl font-extrabold text-sm border border-white/30 flex items-center gap-2 transition-all shadow-md">
+                <span>🔙</span> <span data-va="Totes les Assignatures" data-es="Todas las Asignaturas">Totes les Assignatures</span>
+            </button>
+            <div class="flex items-center bg-white/20 backdrop-blur-md p-1 rounded-xl border border-white/30">
+                <button id="cover-btn-va" onclick="setLanguage('va')" class="px-3 py-1.5 rounded-lg text-sm font-bold transition-all bg-white text-indigo-700 shadow-sm">
+                    Valencià
+                </button>
+                <button id="cover-btn-es" onclick="setLanguage('es')" class="px-3 py-1.5 rounded-lg text-sm font-bold text-white hover:bg-white/10 transition-all">
+                    Castellano (Ajuda)
+                </button>
+            </div>
+        </div>
+
+        <!-- Centro de la portada -->
+        <div class="max-w-4xl w-full mx-auto my-auto text-center py-6 animate-fade-in">
+            <!-- Pentagrama decorativo animado -->
+            <div class="bg-white/15 backdrop-blur-md rounded-3xl p-4 sm:p-5 max-w-xl mx-auto mb-6 border border-white/25 shadow-xl">
+                <svg class="w-full h-24 sm:h-28" viewBox="0 0 420 110">
+                    <line x1="20" y1="25" x2="400" y2="25" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+                    <line x1="20" y1="40" x2="400" y2="40" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+                    <line x1="20" y1="55" x2="400" y2="55" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+                    <line x1="20" y1="70" x2="400" y2="70" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+                    <line x1="20" y1="85" x2="400" y2="85" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+                    <text x="28" y="80" font-size="64" fill="#fde047" font-family="serif">𝄞</text>
+                    <!-- Notas musicales coloridas -->
+                    <g fill="#fca5a5"><ellipse cx="105" cy="85" rx="7" ry="5"/><rect x="110" y="52" width="2.5" height="33"/></g>
+                    <g fill="#fde047"><ellipse cx="155" cy="70" rx="7" ry="5"/><rect x="160" y="37" width="2.5" height="33"/></g>
+                    <g fill="#86efac"><ellipse cx="205" cy="55" rx="7" ry="5"/><rect x="210" y="22" width="2.5" height="33"/><path d="M210 22 Q225 28 220 40" stroke="#86efac" stroke-width="2.5" fill="none"/></g>
+                    <g fill="#93c5fd"><ellipse cx="260" cy="47" rx="7" ry="5"/><rect x="265" y="14" width="2.5" height="33"/></g>
+                    <g fill="#f9a8d4"><ellipse cx="315" cy="62" rx="7" ry="5"/><rect x="320" y="29" width="2.5" height="33"/></g>
+                    <text x="360" y="58" font-size="28" fill="#fde047">🎵</text>
+                </svg>
+            </div>
+
+            <span class="inline-block bg-amber-300 text-amber-950 font-black text-xs sm:text-sm px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md mb-4" data-va="🎶 1r d'ESO • Música Interactiva 🎶" data-es="🎶 1º de ESO • Música Interactiva 🎶">
+                🎶 1r d'ESO • Música Interactiva 🎶
+            </span>
+
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight drop-shadow-md mb-3">
+                Cuaderno interactivo de música para <span class="text-amber-300 underline decoration-wavy decoration-amber-300/70">VEGA</span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-indigo-100 max-w-2xl mx-auto mb-8 font-medium" data-va="Tria quin quadern vols practicar hui. Tot està explicat pas a pas perquè tragues un 10!" data-es="Elige qué cuaderno quieres practicar hoy. ¡Todo está explicado paso a paso para que saques un 10!">
+                Tria quin quadern vols practicar hui. Tot està explicat pas a pas perquè tragues un 10!
+            </p>
+
+            <!-- Dos Tarjetas de Selección (1º Adaptado, 2º Total) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
+                
+                <!-- TARJETA 1: EXAMEN DE MÚSICA ADAPTADO (PRIMERO Y DESTACADO) -->
+                <button onclick="openNotebook('adaptado')" class="group bg-white text-slate-800 rounded-3xl p-6 sm:p-7 shadow-2xl border-4 border-amber-300 hover:scale-[1.02] transition-all flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-3 right-3 bg-amber-400 text-amber-950 text-xs font-black px-3 py-1 rounded-full uppercase shadow-sm" data-va="⭐ Recomanat (Examen Profe)" data-es="⭐ Recomendado (Examen Profe)">
+                        ⭐ Recomanat (Examen Profe)
+                    </div>
+                    <div>
+                        <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform">
+                            🎯
+                        </div>
+                        <h2 class="text-2xl font-black text-indigo-950 mb-2" data-va="Examen de Música Adaptat" data-es="Examen de Música Adaptado">
+                            Examen de Música Adaptat
+                        </h2>
+                        <p class="text-sm text-slate-600 leading-relaxed mb-4" data-va="Preparació exacta per a la prova de Vega: <b>Notes desordenades (DO a DO')</b> + <b>Pàg. 8 (El So)</b> + <b>Pàg. 9 (El Soroll)</b> amb 3 exàmens de 5 preguntes i la flauta." data-es="Preparación exacta para la prueba de Vega: <b>Notas desordenadas (DO a DO')</b> + <b>Pág. 8 (El Sonido)</b> + <b>Pág. 9 (El Ruido)</b> con 3 exámenes de 5 preguntas y la flauta.">
+                            Preparació exacta per a la prova de Vega: <b>Notes desordenades (DO a DO')</b> + <b>Pàg. 8 (El So)</b> + <b>Pàg. 9 (El Soroll)</b> amb 3 exàmens de 5 preguntes i la flauta.
+                        </p>
+                    </div>
+                    <div class="w-full bg-indigo-600 group-hover:bg-indigo-700 text-white font-extrabold py-3 px-5 rounded-xl text-center shadow-md flex items-center justify-center gap-2">
+                        <span data-va="Entrar al Quadern Adaptat" data-es="Entrar al Cuaderno Adaptado">Entrar al Quadern Adaptat</span>
+                        <span>➡️</span>
+                    </div>
+                </button>
+
+                <!-- TARJETA 2: EXAMEN DE MÚSICA TOTAL -->
+                <button onclick="openNotebook('total')" class="group bg-white/95 text-slate-800 rounded-3xl p-6 sm:p-7 shadow-xl border-2 border-white/60 hover:bg-white hover:scale-[1.02] transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform">
+                            📚
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-800 mb-2" data-va="Examen de Música Total" data-es="Examen de Música Total">
+                            Examen de Música Total
+                        </h2>
+                        <p class="text-sm text-slate-600 leading-relaxed mb-4" data-va="El temari complet de la unitat: <b>Les 4 qualitats del so</b>, <b>figures i silencis</b>, <b>matisos musicals</b>, pentagrama, 4 fitxes, 3 simulacres i <i>La Lechuza</i>." data-es="El temario completo de la unidad: <b>Las 4 cualidades del sonido</b>, <b>figuras y silencios</b>, <b>matices musicales</b>, pentagrama, 4 fichas, 3 simulacros y <i>La Lechuza</i>.">
+                            El temari complet de la unitat: <b>Les 4 qualitats del so</b>, <b>figures i silencis</b>, <b>matisos musicals</b>, pentagrama, 4 fitxes, 3 simulacres i <i>La Lechuza</i>.
+                        </p>
+                    </div>
+                    <div class="w-full bg-purple-600 group-hover:bg-purple-700 text-white font-extrabold py-3 px-5 rounded-xl text-center shadow-md flex items-center justify-center gap-2">
+                        <span data-va="Entrar al Quadern Total" data-es="Entrar al Cuaderno Total">Entrar al Quadern Total</span>
+                        <span>➡️</span>
+                    </div>
+                </button>
+
+            </div>
+        </div>
+
+        <p class="text-center text-xs text-indigo-100/80 font-medium" data-va="Fet amb molta il·lusió per ajudar a Vega a brillar en Música ✨" data-es="Hecho con mucha ilusión para ayudar a Vega a brillar en Música ✨">
+            Fet amb molta il·lusió per ajudar a Vega a brillar en Música ✨
+        </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CONTENEDOR DE LOS CUADERNOS (OCULTO INICIO)-->
+    <!-- ========================================== -->
+    <div id="app-container" class="hidden min-h-screen flex flex-col">
+
+    <!-- Barra Superior Fija con Selector de Idioma y Botón Portada -->
+    <header class="bg-white border-b border-indigo-100 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <button onclick="backToCover()" class="bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-700 px-3 py-2 rounded-xl font-extrabold text-xs sm:text-sm transition-all border border-slate-200 flex items-center gap-1.5 shadow-sm">
+                    <span>🏠</span> <span data-va="Portada" data-es="Portada">Portada</span>
+                </button>
+                <div>
+                    <h1 id="header-notebook-title" class="text-base sm:text-xl font-extrabold text-slate-800 tracking-tight" data-va="Examen de Música Adaptat • Vega" data-es="Examen de Música Adaptado • Vega">Examen de Música Adaptat • Vega</h1>
+                    <p id="header-notebook-sub" class="text-xs text-slate-500 font-medium" data-va="Notes (Do a Do') • El So (Pàg. 8) • El Soroll (Pàg. 9)" data-es="Notas (Do a Do') • El Sonido (Pág. 8) • El Ruido (Pág. 9)">Notes (Do a Do') • El So (Pàg. 8) • El Soroll (Pàg. 9)</p>
+                </div>
+            </div>
+
+            <!-- Botón Cambio de Idioma -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button id="btn-va" onclick="setLanguage('va')" class="px-3 py-1.5 rounded-lg text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm">
+                    Valencià
+                </button>
+                <button id="btn-es" onclick="setLanguage('es')" class="px-3 py-1.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">
+                    Castellano (Ajuda)
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú de Navegación por Pestañas -->
+        <nav class="max-w-5xl mx-auto px-4 pb-3 overflow-x-auto">
+            <div class="flex space-x-2 min-w-max">
+                <button onclick="switchTab('teoria')" id="tab-teoria" class="tab-btn tab-active px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5">
+                    <span>📚</span> <span id="nav-lbl-teoria" data-va="Teoria Subratllada" data-es="Teoría Subrayada">Teoria Subratllada</span>
+                </button>
+                <button onclick="switchTab('ficha1')" id="tab-ficha1" class="tab-btn bg-white text-slate-600 hover:bg-indigo-50 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200">
+                    <span id="nav-lbl-f1" data-va="🎼 Fitxa 1: Notes (Do-Do')" data-es="🎼 Ficha 1: Notas (Do-Do')">🎼 Fitxa 1: Notes (Do-Do')</span>
+                </button>
+                <button onclick="switchTab('ficha2')" id="tab-ficha2" class="tab-btn bg-white text-slate-600 hover:bg-indigo-50 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200">
+                    <span id="nav-lbl-f2" data-va="🎵 Fitxa 2: El So (Pàg. 8)" data-es="🎵 Ficha 2: El Sonido (Pág. 8)">🎵 Fitxa 2: El So (Pàg. 8)</span>
+                </button>
+                <button onclick="switchTab('ficha3')" id="tab-ficha3" class="tab-btn bg-white text-slate-600 hover:bg-indigo-50 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200">
+                    <span id="nav-lbl-f3" data-va="📢 Fitxa 3: El Soroll (Pàg. 9)" data-es="📢 Ficha 3: El Ruido (Pág. 9)">📢 Fitxa 3: El Soroll (Pàg. 9)</span>
+                </button>
+                <button onclick="switchTab('ficha4')" id="tab-ficha4" class="tab-btn bg-white text-slate-600 hover:bg-indigo-50 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200">
+                    <span id="nav-lbl-f4" data-va="🧩 Fitxa 4: Repàs Total" data-es="🧩 Ficha 4: Repaso Total">🧩 Fitxa 4: Repàs Total</span>
+                </button>
+                <button onclick="switchTab('examen')" id="tab-examen" class="tab-btn bg-amber-50 text-amber-800 hover:bg-amber-100 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-amber-200">
+                    <span id="nav-lbl-ex" data-va="🎮 3 Exàmens (5 Preguntes)" data-es="🎮 3 Exámenes (5 Preguntas)">🎮 3 Exàmens (5 Preguntes)</span>
+                </button>
+                <button onclick="switchTab('flauta')" id="tab-flauta" class="tab-btn bg-emerald-50 text-emerald-800 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-emerald-200">
+                    <span data-va="🦉 Flauta: La Lechuza" data-es="🦉 Flauta: La Lechuza">🦉 Flauta: La Lechuza</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6">
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 1: TEORÍA SUBRAYADA ADAPTADA       -->
+        <!-- ========================================== -->
+        <section id="sec-teoria" class="tab-content space-y-6 animate-fade-in">
+            
+            <!-- Aviso estructura examen -->
+            <div class="bg-indigo-600 text-white rounded-2xl p-5 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <span class="bg-indigo-500 text-indigo-100 text-xs font-extrabold px-2.5 py-1 rounded-full uppercase">Estructura de l'Examen</span>
+                    <h2 class="text-lg sm:text-xl font-extrabold mt-1" data-va="L'examen tindrà només 5 preguntes:" data-es="El examen tendrá solo 5 preguntas:">L'examen tindrà només 5 preguntes:</h2>
+                    <p class="text-sm text-indigo-100 mt-1" data-va="1️⃣ Endevinar les notes desordenades (de DO a DO') • 2️⃣ i 3️⃣ Dues preguntes de la Pàgina 8 (El So) • 4️⃣ i 5️⃣ Dues preguntes de la Pàgina 9 (El Soroll)." data-es="1️⃣ Adivinar las notas desordenadas (de DO a DO') • 2️⃣ y 3️⃣ Dos preguntas de la Página 8 (El Sonido) • 4️⃣ y 5️⃣ Dos preguntas de la Página 9 (El Ruido).">1️⃣ Endevinar les notes desordenades (de DO a DO') • 2️⃣ i 3️⃣ Dues preguntes de la Pàgina 8 (El So) • 4️⃣ i 5️⃣ Dues preguntes de la Pàgina 9 (El Soroll).</p>
+                </div>
+            </div>
+
+            <!-- BLOQUE 1: LAS NOTAS DE DO A DO' -->
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="bg-indigo-100 text-indigo-700 font-extrabold px-3 py-1 rounded-lg text-sm">1</span>
+                    <h2 class="text-xl font-extrabold text-slate-800" data-va="🎼 Les Notes Musicals (de DO a DO')" data-es="🎼 Las Notas Musicales (de DO a DO')">🎼 Les Notes Musicals (de DO a DO')</h2>
+                </div>
+
+                <p class="text-sm text-slate-700 mb-4" data-va="El pentagrama té <b>5 línies i 4 espais</b> que sempre es compten de <b>baix cap a dalt</b>. A l'examen et posaran aquestes 8 notes desordenades perquè poses el seu nom:" data-es="El pentagrama tiene <b>5 líneas y 4 espacios</b> que siempre se cuentan de <b>abajo hacia arriba</b>. En el examen te pondrán estas 8 notas desordenadas para que pongas su nombre:">El pentagrama té <b>5 línies i 4 espais</b> que sempre es compten de <b>baix cap a dalt</b>. A l'examen et posaran aquestes 8 notes desordenades perquè poses el seu nom:</p>
+
+                <!-- Pentagrama visual grande y claro -->
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-4">
+                    <svg class="w-full max-w-2xl mx-auto h-48" viewBox="0 0 420 165">
+                        <!-- 5 líneas -->
+                        <line x1="25" y1="30" x2="395" y2="30" stroke="#475569" stroke-width="1.5"/>
+                        <line x1="25" y1="52" x2="395" y2="52" stroke="#475569" stroke-width="1.5"/>
+                        <line x1="25" y1="74" x2="395" y2="74" stroke="#475569" stroke-width="1.5"/>
+                        <line x1="25" y1="96" x2="395" y2="96" stroke="#475569" stroke-width="1.5"/>
+                        <line x1="25" y1="118" x2="395" y2="118" stroke="#475569" stroke-width="1.5"/>
+                        
+                        <!-- Clave de Sol -->
+                        <text x="30" y="110" font-size="76" fill="#4f46e5" font-family="serif">𝄞</text>
+
+                        <!-- DO grave -->
+                        <line x1="82" y1="140" x2="112" y2="140" stroke="#0f172a" stroke-width="2.5"/>
+                        <ellipse cx="97" cy="140" rx="9" ry="7" fill="#ef4444"/>
+                        <text x="97" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#dc2626">DO</text>
+
+                        <!-- RE grave -->
+                        <ellipse cx="136" cy="129" rx="9" ry="7" fill="#f97316"/>
+                        <text x="136" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#ea580c">RE</text>
+
+                        <!-- MI (1ª línea) -->
+                        <ellipse cx="175" cy="118" rx="9" ry="7" fill="#eab308"/>
+                        <text x="175" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#ca8a04">MI</text>
+
+                        <!-- FA (1er espacio) -->
+                        <ellipse cx="214" cy="107" rx="9" ry="7" fill="#22c55e"/>
+                        <text x="214" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#16a34a">FA</text>
+
+                        <!-- SOL (2ª línea) -->
+                        <ellipse cx="253" cy="96" rx="9" ry="7" fill="#06b6d4"/>
+                        <text x="253" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#0891b2">SOL</text>
+
+                        <!-- LA (2º espacio) -->
+                        <ellipse cx="292" cy="85" rx="9" ry="7" fill="#3b82f6"/>
+                        <text x="292" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#2563eb">LA</text>
+
+                        <!-- SI (3ª línea) -->
+                        <ellipse cx="331" cy="74" rx="9" ry="7" fill="#8b5cf6"/>
+                        <text x="331" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#7c3aed">SI</text>
+
+                        <!-- DO' (3er espacio) -->
+                        <ellipse cx="370" cy="63" rx="9" ry="7" fill="#ec4899"/>
+                        <text x="370" y="159" font-size="12" font-weight="800" text-anchor="middle" fill="#db2777">DO'</text>
+                    </svg>
+                </div>
+
+                <!-- Trucos de Primaria para las 8 notas -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200">
+                        <p class="font-extrabold text-amber-900 mb-1" data-va="💡 Truc 1: Les notes que estan 'penjades' baix:" data-es="💡 Truco 1: Las notas que están 'colgadas' abajo:">💡 Truc 1: Les notes que estan 'penjades' baix:</p>
+                        <p class="text-slate-700" data-va="• <b>DO (greu):</b> Està baix del tot i té un <b>cinturó</b> (una ratlleta que el travessa).<br>• <b>RE (greu):</b> Està <b>tocant per baix</b> la primera línia (sense ratlleta)." data-es="• <b>DO (grave):</b> Está abajo del todo y tiene un <b>cinturón</b> (una rayita que lo atraviesa).<br>• <b>RE (grave):</b> Está <b>tocando por abajo</b> la primera línea (sin rayita).">• <b>DO (greu):</b> Està baix del tot i té un <b>cinturó</b> (una ratlleta que el travessa).<br>• <b>RE (greu):</b> Està <b>tocant per baix</b> la primera línia (sense ratlleta).</p>
+                    </div>
+                    <div class="bg-indigo-50 p-3.5 rounded-xl border border-indigo-200">
+                        <p class="font-extrabold text-indigo-900 mb-1" data-va="💡 Truc 2: Línies i Espais (de baix a dalt):" data-es="💡 Truco 2: Líneas y Espacios (de abajo a arriba):">💡 Truc 2: Línies i Espais (de baix a dalt):</p>
+                        <p class="text-slate-700" data-va="• <b>En les 3 primeres línies:</b> 1a = <b>MI</b> | 2a = <b>SOL</b> | 3a = <b>SI</b><br>• <b>En els 3 primers espais:</b> 1r = <b>FA</b> | 2n = <b>LA</b> | 3r = <b>DO'</b>" data-es="• <b>En las 3 primeras líneas:</b> 1ª = <b>MI</b> | 2ª = <b>SOL</b> | 3ª = <b>SI</b><br>• <b>En los 3 primeros espacios:</b> 1º = <b>FA</b> | 2º = <b>LA</b> | 3º = <b>DO'</b>">• <b>En les 3 primeres línies:</b> 1a = <b>MI</b> | 2a = <b>SOL</b> | 3a = <b>SI</b><br>• <b>En els 3 primers espais:</b> 1r = <b>FA</b> | 2n = <b>LA</b> | 3r = <b>DO'</b></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 2: PÁGINA 8 SUBRAYADA (EL SO) -->
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-sky-200">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="bg-sky-100 text-sky-800 font-extrabold px-3 py-1 rounded-lg text-sm">Pàgina 8</span>
+                    <h2 class="text-xl font-extrabold text-slate-800" data-va="🎵 1.1. El So (Tot el que està subratllat)" data-es="🎵 1.1. El Sonido (Todo lo que está subrayado)">🎵 1.1. El So (Tot el que està subratllat)</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Definición del recuadro morado del libro -->
+                    <div class="bg-purple-50 border-l-4 border-purple-600 p-4 rounded-xl">
+                        <p class="text-xs font-extrabold uppercase text-purple-700 mb-1" data-va="📌 Definició important del llibre:" data-es="📌 Definición importante del libro:">📌 Definició important del llibre:</p>
+                        <p class="text-base font-bold text-slate-800" data-va="«El <b>so</b> és la sensació que experimentem quan ens arriben a l'orella les ones produïdes per la <b>vibració d'un cos sonor</b>.»" data-es="«El <b>sonido</b> es la sensación que experimentamos cuando nos llegan al oído las ondas producidas por la <b>vibración de un cuerpo sonoro</b>.»">«El <b>so</b> és la sensació que experimentem quan ens arriben a l'orella les ones produïdes per la <b>vibració d'un cos sonor</b>.»</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <!-- Punto 1 -->
+                        <div class="bg-sky-50/70 p-4 rounded-xl border border-sky-200">
+                            <h3 class="font-extrabold text-sky-900 mb-2" data-va="1. Com es produeix el so?" data-es="1. ¿Cómo se produce el sonido?">1. Com es produeix el so?</h3>
+                            <p class="text-slate-700 leading-relaxed" data-va="• Sorgeix quan un cos o un objecte <b>vibra</b>.<br>• <b>Exemples:</b> Quan toques les cordes d'una <b>guitarra</b> o colpeges la membrana d'un <b>tambor</b> (o quan vibra l'aire en la boquilla d'un instrument de vent)." data-es="• Surge cuando un cuerpo u objeto <b>vibra</b>.<br>• <b>Ejemplos:</b> Cuando tocas las cuerdas de una <b>guitarra</b> o golpeas la membrana de un <b>tambor</b> (o cuando vibra el aire en la boquilla de un instrumento de viento).">• Sorgeix quan un cos o un objecte <b>vibra</b>.<br>• <b>Exemples:</b> Quan toques les cordes d'una <b>guitarra</b> o colpeges la membrana d'un <b>tambor</b> (o quan vibra l'aire en la boquilla d'un instrument de vent).</p>
+                        </div>
+
+                        <!-- Punto 2 -->
+                        <div class="bg-sky-50/70 p-4 rounded-xl border border-sky-200">
+                            <h3 class="font-extrabold text-sky-900 mb-2" data-va="2. Com viatja el so?" data-es="2. ¿Cómo viaja el sonido?">2. Com viatja el so?</h3>
+                            <p class="text-slate-700 leading-relaxed" data-va="• La vibració es transmet en forma d'<b>ones sonores</b>.<br>• Viatgen per diferents medis: <b>l'aire, l'aigua, la fusta...</b><br>• <b>Exemple:</b> Quan tires una <b>pedra a l'aigua</b> i fa ondulacions." data-es="• La vibración se transmite en forma de <b>ondas sonoras</b>.<br>• Viajan por diferentes medios: <b>el aire, el agua, la madera...</b><br>• <b>Ejemplo:</b> Cuando tiras una <b>piedra al agua</b> y hace ondulaciones.">• La vibració es transmet en forma d'<b>ones sonores</b>.<br>• Viatgen per diferents medis: <b>l'aire, l'aigua, la fusta...</b><br>• <b>Exemple:</b> Quan tires una <b>pedra a l'aigua</b> i fa ondulacions.</p>
+                        </div>
+
+                        <!-- Punto 3 -->
+                        <div class="bg-sky-50/70 p-4 rounded-xl border border-sky-200">
+                            <h3 class="font-extrabold text-sky-900 mb-2" data-va="3. Com l'escoltem?" data-es="3. ¿Cómo lo escuchamos?">3. Com l'escoltem?</h3>
+                            <p class="text-slate-700 leading-relaxed" data-va="• Percebem les ones gràcies a l'<b>orella</b>.<br>• Dins hi ha una membrana elàstica anomenada <b>timpà</b>.<br>• El timpà <b>vibra</b> quan li arriben les ones i envia la informació al <b>cervell</b>." data-es="• Percibimos las ondas gracias al <b>oído</b>.<br>• Dentro hay una membrana elástica llamada <b>tímpano</b>.<br>• El tímpano <b>vibra</b> cuando le llegan las ondas y envía la información al <b>cerebro</b>.">• Percebem les ones gràcies a l'<b>orella</b>.<br>• Dins hi ha una membrana elàstica anomenada <b>timpà</b>.<br>• El timpà <b>vibra</b> quan li arriben les ones i envia la informació al <b>cervell</b>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: PÁGINA 9 SUBRAYADA (EL SOROLL) -->
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-rose-200">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="bg-rose-100 text-rose-800 font-extrabold px-3 py-1 rounded-lg text-sm">Pàgina 9</span>
+                    <h2 class="text-xl font-extrabold text-slate-800" data-va="📢 1.2. El Soroll (Tot el que està subratllat)" data-es="📢 1.2. El Ruido (Todo lo que está subrayado)">📢 1.2. El Soroll (Tot el que està subratllat)</h2>
+                </div>
+
+                <div class="space-y-4 text-sm">
+                    <!-- Diferencia So vs Soroll -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-rose-50/60 p-4 rounded-xl border border-rose-200">
+                            <h3 class="font-extrabold text-rose-900 mb-2" data-va="1. Diferència entre So i Soroll:" data-es="1. Diferencia entre Sonido y Ruido:">1. Diferència entre So i Soroll:</h3>
+                            <ul class="space-y-2 text-slate-700">
+                                <li data-va="• <b>Definició tradicional (imprecisa):</b> Abans es deia que el soroll era «una cosa desagradable per a les orelles», però això és subjectiu (molts instruments de <b>percussió</b> fan soroll i no molesten)." data-es="• <b>Definición tradicional (imprecisa):</b> Antes se decía que el ruido era «algo desagradable para los oídos», pero eso es subjetivo (muchos instrumentos de <b>percusión</b> hacen ruido y no molestan).">• <b>Definició tradicional (imprecisa):</b> Abans es deia que el soroll era «una cosa desagradable per a les orelles», però això és subjectiu (molts instruments de <b>percussió</b> fan soroll i no molesten).</li>
+                                <li data-va="• <b>Diferència física (la correcta!):</b> Es diferencien pel tipus d'ona:<br>👉 L'ona d'un <b>so</b> és <b>ordenada i regular</b>.<br>👉 L'ona del <b>soroll</b> és <b>desordenada i irregular</b>." data-es="• <b>Diferencia física (¡la correcta!):</b> Se diferencian por el tipo de onda:<br>👉 La onda de un <b>sonido</b> es <b>ordenada y regular</b>.<br>👉 La onda del <b>ruido</b> es <b>desordenada e irregular</b>.">• <b>Diferència física (la correcta!):</b> Es diferencien pel tipus d'ona:<br>👉 L'ona d'un <b>so</b> és <b>ordenada i regular</b>.<br>👉 L'ona del <b>soroll</b> és <b>desordenada i irregular</b>.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200">
+                            <h3 class="font-extrabold text-amber-900 mb-2" data-va="2. Contaminació acústica i Mesura:" data-es="2. Contaminación acústica y Medición:">2. Contaminació acústica i Mesura:</h3>
+                            <ul class="space-y-2 text-slate-700">
+                                <li data-va="• <b>Contaminació acústica:</b> És l'<b>excés de soroll</b>." data-es="• <b>Contaminación acústica:</b> Es el <b>exceso de ruido</b>.">• <b>Contaminació acústica:</b> És l'<b>excés de soroll</b>.</li>
+                                <li data-va="• <b>Efectes nocius sobre la salut:</b> Dificultat de comunicació, trastorns del son, estrés, pèrdua de capacitat auditiva, conductes agressives..." data-es="• <b>Efectos nocivos sobre la salud:</b> Dificultad de comunicación, trastornos del sueño, estrés, pérdida de capacidad auditiva, conductas agresivas...">• <b>Efectes nocius sobre la salut:</b> Dificultat de comunicació, trastorns del son, estrés, pèrdua de capacitat auditiva, conductes agressives...</li>
+                                <li data-va="• <b>Fonts de soroll:</b> Mitjans de transport, activitat industrial, construcció o zones d'oci." data-es="• <b>Fuentes de ruido:</b> Medios de transporte, actividad industrial, construcción o zonas de ocio.">• <b>Fonts de soroll:</b> Mitjans de transport, activitat industrial, construcció o zones d'oci.</li>
+                                <li data-va="• <b>Com es mesura?</b> En <b>decibels (dB)</b> amb un aparell anomenat <b>sonòmetre</b>. El límit recomanat per l'<b>OMS</b> és de <b>65 dB diaris</b>." data-es="• <b>¿Cómo se mide?</b> En <b>decibelios (dB)</b> con un aparato llamado <b>sonómetro</b>. El límite recomendado por la <b>OMS</b> es de <b>65 dB diarios</b>.">• <b>Com es mesura?</b> En <b>decibels (dB)</b> amb un aparell anomenat <b>sonòmetre</b>. El límit recomanat per l'<b>OMS</b> és de <b>65 dB diaris</b>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Curiosidad subrayada en pág 9 -->
+                    <div class="bg-slate-100 p-3.5 rounded-xl border border-slate-300">
+                        <p class="text-slate-800" data-va="🎬 <b>Sabies que... (subratllat al llibre):</b> El curt <i>Música per a un apartament i sis percussionistes</i> mostra com es pot convertir el <b>soroll extramusical</b> (objectes quotidians com una batedora) en una <b>obra d'art</b>." data-es="🎬 <b>Sabías que... (subrayado en el libro):</b> El corto <i>Música para un apartamento y seis percusionistas</i> muestra cómo se puede convertir el <b>ruido extramusical</b> (objetos cotidianos como una batidora) en una <b>obra de arte</b>.">🎬 <b>Sabies que... (subratllat al llibre):</b> El curt <i>Música per a un apartament i sis percussionistes</i> mostra com es pot convertir el <b>soroll extramusical</b> (objectes quotidians com una batedora) en una <b>obra d'art</b>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 2: FICHA 1 (NOTAS DESORDENADAS)    -->
+        <!-- ========================================== -->
+        <section id="sec-ficha1" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800" data-va="🎼 Fitxa 1: Endevina les Notes Desordenades (DO a DO')" data-es="🎼 Ficha 1: Adivina las Notas Desordenadas (DO a DO')">🎼 Fitxa 1: Endevina les Notes Desordenades (DO a DO')</h2>
+                        <p class="text-sm text-slate-500" data-va="Mira cada pentagrama i tria el nom de cada nota (1, 2, 3, 4...). Igual que en l'examen!" data-es="Mira cada pentagrama y elige el nombre de cada nota (1, 2, 3, 4...). ¡Igual que en el examen!">Mira cada pentagrama i tria el nom de cada nota (1, 2, 3, 4...). Igual que en l'examen!</p>
+                    </div>
+                    <span id="score-ficha1" class="hidden px-4 py-2 rounded-xl font-extrabold text-sm"></span>
+                </div>
+
+                <!-- RETO A: Primer pentagrama desordenado (8 notas) -->
+                <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-3" data-va="Exercici 1: Escriu el nom de les 8 notes d'aquest pentagrama:" data-es="Ejercicio 1: Escribe el nombre de las 8 notas de este pentagrama:">Exercici 1: Escriu el nom de les 8 notes d'aquest pentagrama:</h3>
+                    
+                    <div class="bg-white rounded-xl p-3 border border-slate-200 mb-4">
+                        <svg class="w-full max-w-2xl mx-auto h-44" viewBox="0 0 420 160">
+                            <line x1="20" y1="30" x2="400" y2="30" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="52" x2="400" y2="52" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="74" x2="400" y2="74" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="96" x2="400" y2="96" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="118" x2="400" y2="118" stroke="#475569" stroke-width="1.5"/>
+                            <text x="25" y="110" font-size="74" fill="#4f46e5" font-family="serif">𝄞</text>
+
+                            <!-- 1: SOL (2ª línea, y=96) -->
+                            <ellipse cx="90" cy="96" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="90" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">1</text>
+
+                            <!-- 2: DO grave (y=140 + línea) -->
+                            <line x1="118" y1="140" x2="146" y2="140" stroke="#0f172a" stroke-width="2.5"/>
+                            <ellipse cx="132" cy="140" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="132" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">2</text>
+
+                            <!-- 3: SI (3ª línea, y=74) -->
+                            <ellipse cx="174" cy="74" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="174" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">3</text>
+
+                            <!-- 4: MI (1ª línea, y=118) -->
+                            <ellipse cx="216" cy="118" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="216" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">4</text>
+
+                            <!-- 5: DO' agudo (3er espacio, y=63) -->
+                            <ellipse cx="258" cy="63" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="258" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">5</text>
+
+                            <!-- 6: RE grave (bajo 1ª línea, y=129) -->
+                            <ellipse cx="300" cy="129" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="300" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">6</text>
+
+                            <!-- 7: LA (2º espacio, y=85) -->
+                            <ellipse cx="342" cy="85" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="342" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">7</text>
+
+                            <!-- 8: FA (1er espacio, y=107) -->
+                            <ellipse cx="384" cy="107" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="384" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">8</text>
+                        </svg>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 1:</span>
+                            <select id="f1_n1" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 2:</span>
+                            <select id="f1_n2" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 3:</span>
+                            <select id="f1_n3" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 4:</span>
+                            <select id="f1_n4" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 5:</span>
+                            <select id="f1_n5" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 6:</span>
+                            <select id="f1_n6" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 7:</span>
+                            <select id="f1_n7" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota 8:</span>
+                            <select id="f1_n8" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                    </div>
+                    <div id="res_f1_pent1" class="hidden mt-3 p-3.5 rounded-xl border text-sm"></div>
+                </div>
+
+                <!-- RETO B: Segundo pentagrama desordenado (diferente orden) -->
+                <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-3" data-va="Exercici 2: Un altre pentagrama desordenat! Endevina aquestes 5 notes:" data-es="Ejercicio 2: ¡Otro pentagrama desordenado! Adivina estas 5 notas:">Exercici 2: Un altre pentagrama desordenat! Endevina aquestes 5 notes:</h3>
+                    
+                    <div class="bg-white rounded-xl p-3 border border-slate-200 mb-4">
+                        <svg class="w-full max-w-xl mx-auto h-44" viewBox="0 0 340 160">
+                            <line x1="20" y1="30" x2="320" y2="30" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="52" x2="320" y2="52" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="74" x2="320" y2="74" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="96" x2="320" y2="96" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="20" y1="118" x2="320" y2="118" stroke="#475569" stroke-width="1.5"/>
+                            <text x="25" y="110" font-size="74" fill="#4f46e5" font-family="serif">𝄞</text>
+
+                            <!-- A: FA (1er espacio, y=107) -->
+                            <ellipse cx="100" cy="107" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="100" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">A</text>
+
+                            <!-- B: DO' agudo (3er espacio, y=63) -->
+                            <ellipse cx="148" cy="63" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="148" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">B</text>
+
+                            <!-- C: RE grave (bajo 1ª línea, y=129) -->
+                            <ellipse cx="196" cy="129" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="196" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">C</text>
+
+                            <!-- D: SOL (2ª línea, y=96) -->
+                            <ellipse cx="244" cy="96" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="244" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">D</text>
+
+                            <!-- E: DO grave (y=140 + línea) -->
+                            <line x1="278" y1="140" x2="306" y2="140" stroke="#0f172a" stroke-width="2.5"/>
+                            <ellipse cx="292" cy="140" rx="9" ry="7" fill="#0f172a"/>
+                            <text x="292" y="20" font-size="13" font-weight="800" text-anchor="middle" fill="#4f46e5">E</text>
+                        </svg>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota A:</span>
+                            <select id="f1_na" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota B:</span>
+                            <select id="f1_nb" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota C:</span>
+                            <select id="f1_nc" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota D:</span>
+                            <select id="f1_nd" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                            <span class="font-extrabold text-indigo-700">Nota E:</span>
+                            <select id="f1_ne" class="border-2 border-indigo-200 rounded-lg px-2 py-1 font-bold text-sm"><option value="">---</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                    </div>
+                    <div id="res_f1_pent2" class="hidden mt-3 p-3.5 rounded-xl border text-sm"></div>
+                </div>
+
+                <button onclick="checkFicha1()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all">
+                    <span data-va="✅ Comprovar Fitxa 1" data-es="✅ Comprobar Ficha 1">✅ Comprovar Fitxa 1</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 3: FICHA 2 (EL SO - PÁGINA 8)      -->
+        <!-- ========================================== -->
+        <section id="sec-ficha2" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800" data-va="🎵 Fitxa 2: El So (Pàgina 8 del llibre)" data-es="🎵 Ficha 2: El Sonido (Página 8 del libro)">🎵 Fitxa 2: El So (Pàgina 8 del llibre)</h2>
+                        <p class="text-sm text-slate-500" data-va="Preguntes sobre com es produeix el so, les ones i l'orella." data-es="Preguntas sobre cómo se produce el sonido, las ondas y el oído.">Preguntes sobre com es produeix el so, les ones i l'orella.</p>
+                    </div>
+                    <span id="score-ficha2" class="hidden px-4 py-2 rounded-xl font-extrabold text-sm"></span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <!-- Pregunta 1 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="1. Completa la definició del llibre: «El so sorgeix quan un cos o un objecte...»" data-es="1. Completa la definición del libro: «El sonido surge cuando un cuerpo u objeto...»">1. Completa la definició del llibre: «El so sorgeix quan un cos o un objecte...»</p>
+                        <select id="f2_q1" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">vibra (com les cordes d'una guitarra o la membrana d'un tambor).</option>
+                            <option value="bad1">es queda completament quiet en l'espai.</option>
+                            <option value="bad2">brilla amb molta llum.</option>
+                        </select>
+                        <div id="res_f2_q1" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="2. Com viatja la vibració d'un so fins a nosaltres?" data-es="2. ¿Cómo viaja la vibración de un sonido hasta nosotros?">2. Com viatja la vibració d'un so fins a nosaltres?</p>
+                        <select id="f2_q2" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">En línia recta sense moure res.</option>
+                            <option value="ok">En forma d'ones sonores que viatgen per medis com l'aire, l'aigua o la fusta.</option>
+                            <option value="bad2">Només pot viatjar pel foc.</option>
+                        </select>
+                        <div id="res_f2_q2" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="3. Quin exemple posa el llibre per a explicar les ones sonores?" data-es="3. ¿Qué ejemplo pone el libro para explicar las ondas sonoras?">3. Quin exemple posa el llibre per a explicar les ones sonores?</p>
+                        <select id="f2_q3" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Tirar una pedra a l'aigua i veure les ondulacions que produeix.</option>
+                            <option value="bad1">Encendre un llumí en una habitació fosca.</option>
+                            <option value="bad2">Mirar els núvols del cel.</option>
+                        </select>
+                        <div id="res_f2_q3" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="4. Com es diu la membrana elàstica de l'orella que vibra quan li arriben les ones sonores?" data-es="4. ¿Cómo se llama la membrana elástica del oído que vibra cuando le llegan las ondas sonoras?">4. Com es diu la membrana elàstica de l'orella que vibra quan li arriben les ones sonores?</p>
+                        <select id="f2_q4" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Sonòmetre / Sonómetro</option>
+                            <option value="ok">Timpà / Tímpano</option>
+                            <option value="bad2">Pentagrama</option>
+                        </select>
+                        <div id="res_f2_q4" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="5. Vertader (V) o Fals (F): El timpà vibra i transmet la informació del so al cervell." data-es="5. Verdadero (V) o Falso (F): El tímpano vibra y transmite la información del sonido al cerebro.">5. Vertader (V) o Fals (F): El timpà vibra i transmet la informació del so al cervell.</p>
+                        <select id="f2_q5" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria V o F --</option>
+                            <option value="ok">Vertader (V)</option>
+                            <option value="bad1">Fals (F)</option>
+                        </select>
+                        <div id="res_f2_q5" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+                </div>
+
+                <button onclick="checkFicha2()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all">
+                    <span data-va="✅ Comprovar Fitxa 2" data-es="✅ Comprobar Ficha 2">✅ Comprovar Fitxa 2</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 4: FICHA 3 (EL SOROLL - PÁGINA 9)  -->
+        <!-- ========================================== -->
+        <section id="sec-ficha3" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800" data-va="📢 Fitxa 3: El Soroll (Pàgina 9 del llibre)" data-es="📢 Ficha 3: El Ruido (Página 9 del libro)">📢 Fitxa 3: El Soroll (Pàgina 9 del llibre)</h2>
+                        <p class="text-sm text-slate-500" data-va="Preguntes sobre les ones del soroll, la contaminació acústica i el sonòmetre." data-es="Preguntas sobre las ondas del ruido, la contaminación acústica y el sonómetro.">Preguntes sobre les ones del soroll, la contaminació acústica i el sonòmetre.</p>
+                    </div>
+                    <span id="score-ficha3" class="hidden px-4 py-2 rounded-xl font-extrabold text-sm"></span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <!-- Pregunta 1 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="1. Per què diu el llibre que definir el soroll com «una cosa desagradable» és imprecís?" data-es="1. ¿Por qué dice el libro que definir el ruido como «algo desagradable» es impreciso?">1. Per què diu el llibre que definir el soroll com «una cosa desagradable» és imprecís?</p>
+                        <select id="f3_q1" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Perquè és subjectiu: molts instruments de percussió fan soroll i no ens molesten.</option>
+                            <option value="bad1">Perquè el soroll no existeix en la música.</option>
+                            <option value="bad2">Perquè tots els sorolls tenen una ona molt ordenada.</option>
+                        </select>
+                        <div id="res_f3_q1" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="2. Des d'un punt de vista físic, com és l'ona d'un SO i com és l'ona d'un SOROLL?" data-es="2. Desde un punto de vista físico, ¿cómo es la onda de un SONIDO y cómo es la onda de un RUIDO?">2. Des d'un punt de vista físic, com és l'ona d'un SO i com és l'ona d'un SOROLL?</p>
+                        <select id="f3_q2" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Les dues són iguals (molt desordenades).</option>
+                            <option value="ok">L'ona del so és ordenada i regular; l'ona del soroll és desordenada i irregular.</option>
+                            <option value="bad2">L'ona del so és irregular i la del soroll és ordenada.</option>
+                        </select>
+                        <div id="res_f3_q2" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="3. Com s'anomena l'excés de soroll que perjudica la nostra salut?" data-es="3. ¿Cómo se llama el exceso de ruido que perjudica nuestra salud?">3. Com s'anomena l'excés de soroll que perjudica la nostra salut?</p>
+                        <select id="f3_q3" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Contaminació acústica.</option>
+                            <option value="bad1">Silenci absolut.</option>
+                            <option value="bad2">Vibració musical.</option>
+                        </select>
+                        <div id="res_f3_q3" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="4. Quins efectes nocius sobre la salut té la contaminació acústica?" data-es="4. ¿Qué efectos nocivos sobre la salud tiene la contaminación acústica?">4. Quins efectes nocius sobre la salut té la contaminació acústica?</p>
+                        <select id="f3_q4" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Millora la memòria i ajuda a dormir millor.</option>
+                            <option value="ok">Dificultat de comunicació, trastorns del son, estrés, pèrdua auditiva i conductes agressives.</option>
+                            <option value="bad2">No té cap efecte sobre les persones.</option>
+                        </select>
+                        <div id="res_f3_q4" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="5. En quina unitat es mesura el soroll, amb quin aparell i quin és el límit de l'OMS?" data-es="5. ¿En qué unidad se mide el ruido, con qué aparato y cuál es el límite de la OMS?">5. En quina unitat es mesura el soroll, amb quin aparell i quin és el límit de l'OMS?</p>
+                        <select id="f3_q5" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">En decibels (dB), amb el sonòmetre, i el límit de l'OMS és de 65 dB diaris.</option>
+                            <option value="bad1">En metres (m), amb el diapasó, i el límit és de 130 dB.</option>
+                            <option value="bad2">En graus (°C), amb el termòmetre, i el límit és de 10 dB.</option>
+                        </select>
+                        <div id="res_f3_q5" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+                </div>
+
+                <button onclick="checkFicha3()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all">
+                    <span data-va="✅ Comprovar Fitxa 3" data-es="✅ Comprobar Ficha 3">✅ Comprovar Fitxa 3</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 5: FICHA 4 (REPASO TOTAL MEZCLADO) -->
+        <!-- ========================================== -->
+        <section id="sec-ficha4" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800" data-va="🧩 Fitxa 4: Repàs Total de l'Examen" data-es="🧩 Ficha 4: Repaso Total del Examen">🧩 Fitxa 4: Repàs Total de l'Examen</h2>
+                        <p class="text-sm text-slate-500" data-va="Practiquem amb preguntes variades de tot el que entrarà." data-es="Practicamos con preguntas variadas de todo lo que entrará.">Practiquem amb preguntes variades de tot el que entrarà.</p>
+                    </div>
+                    <span id="score-ficha4" class="hidden px-4 py-2 rounded-xl font-extrabold text-sm"></span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <!-- Pregunta 1: Relacionar fuentes de ruido -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="1. Quines són les principals fonts de soroll ambiental que anomena la pàgina 9?" data-es="1. ¿Cuáles son las principales fuentes de ruido ambiental que nombra la página 9?">1. Quines són les principals fonts de soroll ambiental que anomena la pàgina 9?</p>
+                        <select id="f4_q1" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Els mitjans de transport, l'activitat industrial, la construcció i les zones d'oci.</option>
+                            <option value="bad1">Els ocells trinant i la remor de les fulles dels arbres.</option>
+                            <option value="bad2">Llegir un llibre en silenci.</option>
+                        </select>
+                        <div id="res_f4_q1" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 2: Sabies que... -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="2. En l'apartat 'Sabies que...' de la pàgina 9, com fan música els sis percussionistes?" data-es="2. En el apartado 'Sabías que...' de la página 9, ¿cómo hacen música los seis percusionistas?">2. En l'apartat 'Sabies que...' de la pàgina 9, com fan música els sis percussionistes?</p>
+                        <select id="f4_q2" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Tocant violins i flautes clàssiques.</option>
+                            <option value="ok">Convertint el soroll extramusical (objectes quotidians com una batedora) en obra d'art.</option>
+                            <option value="bad2">Estant en silenci absolut durant 4 minuts.</option>
+                        </select>
+                        <div id="res_f4_q2" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 3: Definición completa de Sonido -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="3. Quin és el camí correcte del so des que es produeix fins que l'entenem?" data-es="3. ¿Cuál es el camino correcto del sonido desde que se produce hasta que lo entendemos?">3. Quin és el camí correcte del so des que es produeix fins que l'entenem?</p>
+                        <select id="f4_q3" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria el camí correcte --</option>
+                            <option value="ok">1. Objecte vibra → 2. Ones sonores per l'aire → 3. Vibra el timpà → 4. Arriba al cervell.</option>
+                            <option value="bad1">1. Arriba al cervell → 2. Objecte vibra → 3. Vibra el timpà.</option>
+                            <option value="bad2">1. Vibra el timpà → 2. L'objecte es para → 3. No arriba res al cervell.</option>
+                        </select>
+                        <div id="res_f4_q3" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 4: Tabla de decibelios pág 9 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="4. Segons la taula de la pàgina 9, quin d'aquests sons NO supera el límit saludable de 65 dB?" data-es="4. Según la tabla de la página 9, ¿cuál de estos sonidos NO supera el límite saludable de 65 dB?">4. Segons la taula de la pàgina 9, quin d'aquests sons NO supera el límit saludable de 65 dB?</p>
+                        <select id="f4_q4" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Una mascletada (130 dB)</option>
+                            <option value="bad2">El trànsit rodat (85 dB)</option>
+                            <option value="ok">Una conversa normal (50 dB) o els ocells trinant (10 dB)</option>
+                        </select>
+                        <div id="res_f4_q4" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- Pregunta 5: Posición de notas -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="5. Quines són les 3 notes que s'escriuen en els 3 primers ESPAIS (de baix a dalt)?" data-es="5. ¿Cuáles son las 3 notas que se escriben en los 3 primeros ESPACIOS (de abajo a arriba)?">5. Quines són les 3 notes que s'escriuen en els 3 primers ESPAIS (de baix a dalt)?</p>
+                        <select id="f4_q5" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">FA (1r espai) - LA (2n espai) - DO' (3r espai)</option>
+                            <option value="bad1">MI - SOL - SI</option>
+                            <option value="bad2">DO - RE - MI</option>
+                        </select>
+                        <div id="res_f4_q5" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+                </div>
+
+                <button onclick="checkFicha4()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all">
+                    <span data-va="✅ Comprovar Fitxa 4" data-es="✅ Comprobar Ficha 4">✅ Comprovar Fitxa 4</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 6: 3 SIMULACROS DE EXAMEN (JUEGO)  -->
+        <!-- ========================================== -->
+        <section id="sec-examen" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-6 card-shadow border-2 border-amber-200">
+                <!-- Cabecera tipo Juego -->
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-amber-100 pb-4 mb-5">
+                    <div>
+                        <span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">🎮 Mode Joc • Format Exacte de l'Examen</span>
+                        <h2 class="text-2xl font-extrabold text-slate-800 mt-2" data-va="🏆 3 Simulacres de 5 Preguntes" data-es="🏆 3 Simulacros de 5 Preguntas">🏆 3 Simulacres de 5 Preguntes</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-va="Cada simulacre té les 5 preguntes exactes del profe (1 de notes desordenades + 2 de pàg. 8 + 2 de pàg. 9). Aconsegueix les 3 medalles!" data-es="Cada simulacro tiene las 5 preguntas exactas del profe (1 de notas desordenadas + 2 de pág. 8 + 2 de pág. 9). ¡Consigue las 3 medallas!">Cada simulacre té les 5 preguntes exactes del profe (1 de notes desordenades + 2 de pàg. 8 + 2 de pàg. 9). Aconsegueix les 3 medalles!</p>
+                    </div>
+                    <!-- Medallero visual -->
+                    <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+                        <div id="medal-1" class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-500 text-xs font-extrabold flex items-center gap-1 transition-all">
+                            <span>🥉</span> <span data-va="Examen 1" data-es="Examen 1">Examen 1</span>
+                        </div>
+                        <div id="medal-2" class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-500 text-xs font-extrabold flex items-center gap-1 transition-all">
+                            <span>🥈</span> <span data-va="Examen 2" data-es="Examen 2">Examen 2</span>
+                        </div>
+                        <div id="medal-3" class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-500 text-xs font-extrabold flex items-center gap-1 transition-all">
+                            <span>🥇</span> <span data-va="Examen 3" data-es="Examen 3">Examen 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selector de los 3 Simulacros -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+                    <button onclick="switchSimulacro(1)" id="btn-sim-1" class="sim-btn bg-amber-500 text-white font-extrabold py-3 px-2 sm:px-4 rounded-xl shadow-md text-xs sm:text-sm transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5">
+                        <span>⭐</span> <span data-va="Simulacre 1" data-es="Simulacro 1">Simulacre 1</span>
+                    </button>
+                    <button onclick="switchSimulacro(2)" id="btn-sim-2" class="sim-btn bg-slate-100 text-slate-600 hover:bg-amber-50 font-extrabold py-3 px-2 sm:px-4 rounded-xl border border-slate-200 text-xs sm:text-sm transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5">
+                        <span>⭐⭐</span> <span data-va="Simulacre 2" data-es="Simulacro 2">Simulacre 2</span>
+                    </button>
+                    <button onclick="switchSimulacro(3)" id="btn-sim-3" class="sim-btn bg-slate-100 text-slate-600 hover:bg-amber-50 font-extrabold py-3 px-2 sm:px-4 rounded-xl border border-slate-200 text-xs sm:text-sm transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5">
+                        <span>⭐⭐⭐</span> <span data-va="Simulacre 3" data-es="Simulacro 3">Simulacre 3</span>
+                    </button>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- SIMULACRO 1 (5 PREGUNTAS)             -->
+                <!-- ===================================== -->
+                <div id="sim-panel-1" class="sim-panel space-y-5">
+                    <div class="flex items-center justify-between bg-amber-50 p-3.5 rounded-xl border border-amber-200">
+                        <span class="font-extrabold text-amber-900" data-va="⭐ Simulacre 1 (5 Preguntes • 10 Punts)" data-es="⭐ Simulacro 1 (5 Preguntas • 10 Puntos)">⭐ Simulacre 1 (5 Preguntes • 10 Punts)</span>
+                        <span id="score-sim-1" class="hidden font-black text-base px-3 py-1 rounded-lg"></span>
+                    </div>
+
+                    <!-- P1: Notas desordenadas -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="1. (2 punts) Escriu el nom d'aquestes 4 notes desordenades (de DO a DO'):" data-es="1. (2 puntos) Escribe el nombre de estas 4 notas desordenadas (de DO a DO'):">1. (2 punts) Escriu el nom d'aquestes 4 notes desordenades (de DO a DO'):</p>
+                        <div class="bg-white rounded-xl p-2 border border-slate-200 mb-3">
+                            <svg class="w-full max-w-md mx-auto h-36" viewBox="0 0 300 150">
+                                <line x1="20" y1="25" x2="280" y2="25" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="47" x2="280" y2="47" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="69" x2="280" y2="69" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="91" x2="280" y2="91" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="113" x2="280" y2="113" stroke="#475569" stroke-width="1.5"/>
+                                <text x="25" y="105" font-size="70" fill="#4f46e5" font-family="serif">𝄞</text>
+                                <!-- 1: MI (1ª línea y=113) -->
+                                <ellipse cx="95" cy="113" rx="8" ry="6" fill="#0f172a"/><text x="95" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">1</text>
+                                <!-- 2: LA (2º espacio y=80) -->
+                                <ellipse cx="145" cy="80" rx="8" ry="6" fill="#0f172a"/><text x="145" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">2</text>
+                                <!-- 3: DO grave (y=135) -->
+                                <line x1="183" y1="135" x2="207" y2="135" stroke="#0f172a" stroke-width="2"/><ellipse cx="195" cy="135" rx="8" ry="6" fill="#0f172a"/><text x="195" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">3</text>
+                                <!-- 4: SI (3ª línea y=69) -->
+                                <ellipse cx="245" cy="69" rx="8" ry="6" fill="#0f172a"/><text x="245" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">4</text>
+                            </svg>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <select id="s1_n1" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 1...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s1_n2" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 2...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s1_n3" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 3...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s1_n4" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 4...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div id="res_s1_1" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P2: Pág 8 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="2. (Pàg. 8 - 2 punts) Què és el SO i com es produeix?" data-es="2. (Pág. 8 - 2 puntos) ¿Qué es el SONIDO y cómo se produce?">2. (Pàg. 8 - 2 punts) Què és el SO i com es produeix?</p>
+                        <select id="s1_2" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">És la sensació que sentim quan ens arriben a l'orella les ones produïdes per la vibració d'un cos sonor.</option>
+                            <option value="bad1">És l'absència total de vibració en el buit de l'espai.</option>
+                            <option value="bad2">És un aparell que serveix per a mesurar decibels.</option>
+                        </select>
+                        <div id="res_s1_2" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P3: Pág 8 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="3. (Pàg. 8 - 2 punts) Com es diu la membrana elàstica de l'orella que vibra amb les ones sonores?" data-es="3. (Pág. 8 - 2 puntos) ¿Cómo se llama la membrana elástica del oído que vibra con las ondas sonoras?">3. (Pàg. 8 - 2 punts) Com es diu la membrana elàstica de l'orella que vibra amb les ones sonores?</p>
+                        <select id="s1_3" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Diapasó / Diapasón</option>
+                            <option value="ok">Timpà / Tímpano</option>
+                            <option value="bad2">Tambor</option>
+                        </select>
+                        <div id="res_s1_3" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P4: Pág 9 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="4. (Pàg. 9 - 2 punts) Quina diferència física hi ha entre l'ona d'un SO i l'ona d'un SOROLL?" data-es="4. (Pág. 9 - 2 puntos) ¿Qué diferencia física hay entre la onda de un SONIDO y la onda de un RUIDO?">4. (Pàg. 9 - 2 punts) Quina diferència física hi ha entre l'ona d'un SO i l'ona d'un SOROLL?</p>
+                        <select id="s1_4" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">L'ona del so és ordenada i regular; l'ona del soroll és desordenada i irregular.</option>
+                            <option value="bad1">L'ona del so és irregular i la del soroll és ordenada.</option>
+                            <option value="bad2">Totes dues tenen exactament la mateixa ona.</option>
+                        </select>
+                        <div id="res_s1_4" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P5: Pág 9 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="5. (Pàg. 9 - 2 punts) Amb quin aparell i en quina unitat es mesura el nivell de soroll?" data-es="5. (Pág. 9 - 2 puntos) ¿Con qué aparato y en qué unidad se mide el nivel de ruido?">5. (Pàg. 9 - 2 punts) Amb quin aparell i en quina unitat es mesura el nivell de soroll?</p>
+                        <select id="s1_5" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Amb el termòmetre en graus.</option>
+                            <option value="ok">Amb el sonòmetre en decibels (dB).</option>
+                            <option value="bad2">Amb el diapasó en segons.</option>
+                        </select>
+                        <div id="res_s1_5" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <button onclick="checkSimulacro(1)" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-md transition-all text-lg">
+                        <span data-va="🏆 Comprovar Simulacre 1" data-es="🏆 Comprobar Simulacro 1">🏆 Comprovar Simulacre 1</span>
+                    </button>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- SIMULACRO 2 (5 PREGUNTAS DIFERENTES)  -->
+                <!-- ===================================== -->
+                <div id="sim-panel-2" class="sim-panel hidden space-y-5">
+                    <div class="flex items-center justify-between bg-amber-50 p-3.5 rounded-xl border border-amber-200">
+                        <span class="font-extrabold text-amber-900" data-va="⭐⭐ Simulacre 2 (5 Preguntes • 10 Punts)" data-es="⭐⭐ Simulacro 2 (5 Preguntas • 10 Puntos)">⭐⭐ Simulacre 2 (5 Preguntes • 10 Punts)</span>
+                        <span id="score-sim-2" class="hidden font-black text-base px-3 py-1 rounded-lg"></span>
+                    </div>
+
+                    <!-- P1: Notas desordenadas diferentes -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="1. (2 punts) Escriu el nom d'aquestes 4 notes desordenades (de DO a DO'):" data-es="1. (2 puntos) Escribe el nombre de estas 4 notas desordenadas (de DO a DO'):">1. (2 punts) Escriu el nom d'aquestes 4 notes desordenades (de DO a DO'):</p>
+                        <div class="bg-white rounded-xl p-2 border border-slate-200 mb-3">
+                            <svg class="w-full max-w-md mx-auto h-36" viewBox="0 0 300 150">
+                                <line x1="20" y1="25" x2="280" y2="25" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="47" x2="280" y2="47" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="69" x2="280" y2="69" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="91" x2="280" y2="91" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="113" x2="280" y2="113" stroke="#475569" stroke-width="1.5"/>
+                                <text x="25" y="105" font-size="70" fill="#4f46e5" font-family="serif">𝄞</text>
+                                <!-- 1: SOL (2ª línea y=91) -->
+                                <ellipse cx="95" cy="91" rx="8" ry="6" fill="#0f172a"/><text x="95" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">1</text>
+                                <!-- 2: RE grave (bajo 1ª línea y=124) -->
+                                <ellipse cx="145" cy="124" rx="8" ry="6" fill="#0f172a"/><text x="145" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">2</text>
+                                <!-- 3: DO' agudo (3er espacio y=58) -->
+                                <ellipse cx="195" cy="58" rx="8" ry="6" fill="#0f172a"/><text x="195" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">3</text>
+                                <!-- 4: FA (1er espacio y=102) -->
+                                <ellipse cx="245" cy="102" rx="8" ry="6" fill="#0f172a"/><text x="245" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">4</text>
+                            </svg>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <select id="s2_n1" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 1...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s2_n2" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 2...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s2_n3" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 3...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s2_n4" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 4...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div id="res_s2_1" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P2: Pág 8 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="2. (Pàg. 8 - 2 punts) Per quins medis poden viatjar les ones sonores?" data-es="2. (Pág. 8 - 2 puntos) ¿Por qué medios pueden viajar las ondas sonoras?">2. (Pàg. 8 - 2 punts) Per quins medis poden viatjar les ones sonores?</p>
+                        <select id="s2_2" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Per medis com l'aire, l'aigua o la fusta.</option>
+                            <option value="bad1">Només pel buit de l'espai exterior.</option>
+                            <option value="bad2">Només a través del paper.</option>
+                        </select>
+                        <div id="res_s2_2" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P3: Pág 8 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="3. (Pàg. 8 - 2 punts) Què passa quan toques les cordes d'una guitarra o colpeges un tambor?" data-es="3. (Pág. 8 - 2 puntos) ¿Qué pasa cuando tocas las cuerdas de una guitarra o golpeas un tambor?">3. (Pàg. 8 - 2 punts) Què passa quan toques les cordes d'una guitarra o colpeges un tambor?</p>
+                        <select id="s2_3" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Es queden quiets i no produeixen ones.</option>
+                            <option value="ok">Les cordes o la membrana vibren i produeixen so.</option>
+                            <option value="bad2">Es trenquen per la contaminació acústica.</option>
+                        </select>
+                        <div id="res_s2_3" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P4: Pág 9 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="4. (Pàg. 9 - 2 punts) Què és la contaminació acústica i quin és el límit recomanat per l'OMS?" data-es="4. (Pág. 9 - 2 puntos) ¿Qué es la contaminación acústica y cuál es el límite recomendado por la OMS?">4. (Pàg. 9 - 2 punts) Què és la contaminació acústica i quin és el límit recomanat per l'OMS?</p>
+                        <select id="s2_4" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">És l'excés de soroll (perjudicial per a la salut) i el límit de l'OMS és de 65 dB diaris.</option>
+                            <option value="bad1">És la falta de música i el límit és de 10 dB.</option>
+                            <option value="bad2">És tocar instruments de corda i el límit és de 200 dB.</option>
+                        </select>
+                        <div id="res_s2_4" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P5: Pág 9 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="5. (Pàg. 9 - 2 punts) Anomena 3 efectes nocius que té l'excés de soroll sobre la salut:" data-es="5. (Pág. 9 - 2 puntos) Nombra 3 efectos nocivos que tiene el exceso de ruido sobre la salud:">5. (Pàg. 9 - 2 punts) Anomena 3 efectes nocius que té l'excés de soroll sobre la salut:</p>
+                        <select id="s2_5" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Alegria, descans profund i bona oïda.</option>
+                            <option value="ok">Trastorns del son, estrés i pèrdua de capacitat auditiva.</option>
+                            <option value="bad2">Millor comunicació i relaxació.</option>
+                        </select>
+                        <div id="res_s2_5" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <button onclick="checkSimulacro(2)" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-md transition-all text-lg">
+                        <span data-va="🏆 Comprovar Simulacre 2" data-es="🏆 Comprobar Simulacro 2">🏆 Comprovar Simulacre 2</span>
+                    </button>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- SIMULACRO 3 (5 PREGUNTAS DIFERENTES)  -->
+                <!-- ===================================== -->
+                <div id="sim-panel-3" class="sim-panel hidden space-y-5">
+                    <div class="flex items-center justify-between bg-amber-50 p-3.5 rounded-xl border border-amber-200">
+                        <span class="font-extrabold text-amber-900" data-va="⭐⭐⭐ Simulacre 3 (5 Preguntes • 10 Punts)" data-es="⭐⭐⭐ Simulacro 3 (5 Preguntas • 10 Puntos)">⭐⭐⭐ Simulacre 3 (5 Preguntes • 10 Punts)</span>
+                        <span id="score-sim-3" class="hidden font-black text-base px-3 py-1 rounded-lg"></span>
+                    </div>
+
+                    <!-- P1: Notas desordenadas diferentes -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="1. (2 punts) Escriu el nom d'aquestes 4 notes desordenades (de DO a DO'):" data-es="1. (2 puntos) Escribe el nombre de estas 4 notas desordenadas (de DO a DO'):">1. (2 punts) Escriu el nom d'aquestes 4 notes desordenades (de DO a DO'):</p>
+                        <div class="bg-white rounded-xl p-2 border border-slate-200 mb-3">
+                            <svg class="w-full max-w-md mx-auto h-36" viewBox="0 0 300 150">
+                                <line x1="20" y1="25" x2="280" y2="25" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="47" x2="280" y2="47" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="69" x2="280" y2="69" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="91" x2="280" y2="91" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="20" y1="113" x2="280" y2="113" stroke="#475569" stroke-width="1.5"/>
+                                <text x="25" y="105" font-size="70" fill="#4f46e5" font-family="serif">𝄞</text>
+                                <!-- 1: SI (3ª línea y=69) -->
+                                <ellipse cx="95" cy="69" rx="8" ry="6" fill="#0f172a"/><text x="95" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">1</text>
+                                <!-- 2: DO grave (y=135) -->
+                                <line x1="133" y1="135" x2="157" y2="135" stroke="#0f172a" stroke-width="2"/><ellipse cx="145" cy="135" rx="8" ry="6" fill="#0f172a"/><text x="145" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">2</text>
+                                <!-- 3: LA (2º espacio y=80) -->
+                                <ellipse cx="195" cy="80" rx="8" ry="6" fill="#0f172a"/><text x="195" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">3</text>
+                                <!-- 4: MI (1ª línea y=113) -->
+                                <ellipse cx="245" cy="113" rx="8" ry="6" fill="#0f172a"/><text x="245" y="18" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">4</text>
+                            </svg>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <select id="s3_n1" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 1...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s3_n2" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 2...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s3_n3" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 3...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                            <select id="s3_n4" class="bg-white border-2 border-slate-300 rounded-lg p-2 font-bold text-sm"><option value="">Nota 4...</option><option value="DO">DO</option><option value="RE">RE</option><option value="MI">MI</option><option value="FA">FA</option><option value="SOL">SOL</option><option value="LA">LA</option><option value="SI">SI</option><option value="DO'">DO'</option></select>
+                        </div>
+                        <div id="res_s3_1" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P2: Pág 8 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="2. (Pàg. 8 - 2 punts) Quina semblança tenen les ondulacions d'una pedra en l'aigua amb el so?" data-es="2. (Pág. 8 - 2 puntos) ¿Qué parecido tienen las ondulaciones de una piedra en el agua con el sonido?">2. (Pàg. 8 - 2 punts) Quina semblança tenen les ondulacions d'una pedra en l'aigua amb el so?</p>
+                        <select id="s3_2" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Que la vibració es transmet en forma d'ones que es mouen a través de l'aire.</option>
+                            <option value="bad1">Que totes dues mullen la guitarra.</option>
+                            <option value="bad2">Que no produeixen cap moviment.</option>
+                        </select>
+                        <div id="res_s3_2" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P3: Pág 8 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="3. (Pàg. 8 - 2 punts) Què fa el timpà quan li arriben les ones sonores?" data-es="3. (Pág. 8 - 2 puntos) ¿Qué hace el tímpano cuando le llegan las ondas sonoras?">3. (Pàg. 8 - 2 punts) Què fa el timpà quan li arriben les ones sonores?</p>
+                        <select id="s3_3" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="bad1">Es tanca perquè no passe el so.</option>
+                            <option value="ok">Vibra i transmet aquesta informació al cervell.</option>
+                            <option value="bad2">Mesura els decibels en una pantalla.</option>
+                        </select>
+                        <div id="res_s3_3" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P4: Pág 9 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="4. (Pàg. 9 - 2 punts) Quines són les fonts principals de soroll ambiental?" data-es="4. (Pág. 9 - 2 puntos) ¿Cuáles son las fuentes principales de ruido ambiental?">4. (Pàg. 9 - 2 punts) Quines són les fonts principals de soroll ambiental?</p>
+                        <select id="s3_4" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Els mitjans de transport, l'activitat industrial, la construcció o les zones d'oci.</option>
+                            <option value="bad1">Els ocells i les fulles dels arbres.</option>
+                            <option value="bad2">Les biblioteques en silenci.</option>
+                        </select>
+                        <div id="res_s3_4" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <!-- P5: Pág 9 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="5. (Pàg. 9 - 2 punts) Què demostra el curt 'Música per a un apartament i sis percussionistes'?" data-es="5. (Pág. 9 - 2 puntos) ¿Qué demuestra el corto 'Música para un apartamento y seis percusionistas'?">5. (Pàg. 9 - 2 punts) Què demostra el curt 'Música per a un apartament i sis percussionistes'?</p>
+                        <select id="s3_5" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria la resposta correcta --</option>
+                            <option value="ok">Que es pot convertir el soroll extramusical (objectes quotidians) en una obra d'art.</option>
+                            <option value="bad1">Que no es pot fer música en una casa.</option>
+                            <option value="bad2">Que els percussionistes només toquen la guitarra.</option>
+                        </select>
+                        <div id="res_s3_5" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <button onclick="checkSimulacro(3)" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-md transition-all text-lg">
+                        <span data-va="🏆 Comprovar Simulacre 3" data-es="🏆 Comprobar Simulacro 3">🏆 Comprovar Simulacre 3</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 7: PRÁCTICA FLAUTA "LA LECHUZA"    -->
+        <!-- ========================================== -->
+        <section id="sec-flauta" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-emerald-200">
+                <div class="border-b border-emerald-100 pb-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Prova Pràctica</span>
+                        <h2 class="text-2xl font-extrabold text-slate-800 mt-2" data-va="🦉 Cançó de Flauta: 'La Lechuza'" data-es="🦉 Canción de Flauta: 'La Lechuza'">🦉 Cançó de Flauta: 'La Lechuza'</h2>
+                        <p class="text-sm text-slate-600 mt-1" data-va="Practica per trossos curts. Prem el botó d'escoltar per a sentir la melodia!" data-es="Practica por trozos cortos. ¡Pulsa el botón de escuchar para oír la melodía!">Practica per trossos curts. Prem el botó d'escoltar per a sentir la melodia!</p>
+                    </div>
+                    <button onclick="playFullLechuza()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-xl shadow-md flex items-center gap-2 transition-all">
+                        <span>🔊</span> <span data-va="Escoltar Cançó Sencera" data-es="Escuchar Canción Entera">Escoltar Cançó Sencera</span>
+                    </button>
+                </div>
+
+                <!-- Guía Visual de Posiciones de Flauta -->
+                <div class="mb-6 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-3" data-va="1. Posició dels dits en la flauta (Mà ESQUERRA dalt, Mà DRETA baix):" data-es="1. Posición de los dedos en la flauta (Mano IZQUIERDA arriba, Mano DERECHA abajo):">1. Posició dels dits en la flauta (Mà ESQUERRA dalt, Mà DRETA baix):</h3>
+                    <p class="text-xs text-slate-500 mb-4" data-va="● = Forat tapat  |  ○ = Forat obert. (Prem damunt de cada nota per a escoltar-la!)" data-es="● = Agujero tapado  |  ○ = Agujero abierto. (¡Pulsa encima de cada nota para escucharla!)">● = Forat tapat  |  ○ = Forat obert. (Prem damunt de cada nota per a escoltar-la!)</p>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-center">
+                        <button onclick="playSingleNote('C4')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 transition-all">
+                            <span class="font-black text-lg text-red-600 block">DO <span class="text-xs font-normal">(greu)</span></span>
+                            <div class="text-xs font-mono leading-tight my-2 text-slate-800">[●] darrere<br>●<br>●<br>●<br>---<br>●<br>●<br>●<br>●</div>
+                            <span class="text-[11px] font-bold text-indigo-600" data-va="Tots tapats" data-es="Todos tapados">Tots tapats</span>
+                        </button>
+                        <button onclick="playSingleNote('D4')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 transition-all">
+                            <span class="font-black text-lg text-orange-600 block">RE <span class="text-xs font-normal">(greu)</span></span>
+                            <div class="text-xs font-mono leading-tight my-2 text-slate-800">[●] darrere<br>●<br>●<br>●<br>---<br>●<br>●<br>●<br>○</div>
+                            <span class="text-[11px] font-bold text-indigo-600" data-va="6 tapats" data-es="6 tapados">6 tapats</span>
+                        </button>
+                        <button onclick="playSingleNote('E4')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 transition-all">
+                            <span class="font-black text-lg text-yellow-600 block">MI</span>
+                            <div class="text-xs font-mono leading-tight my-2 text-slate-800">[●] darrere<br>●<br>●<br>●<br>---<br>●<br>●<br>○<br>○</div>
+                            <span class="text-[11px] font-bold text-indigo-600" data-va="3 esq + 2 dreta" data-es="3 izq + 2 der">3 esq + 2 dreta</span>
+                        </button>
+                        <button onclick="playSingleNote('F4')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 transition-all">
+                            <span class="font-black text-lg text-green-600 block">FA</span>
+                            <div class="text-xs font-mono leading-tight my-2 text-slate-800">[●] darrere<br>●<br>●<br>●<br>---<br>●<br>○<br>○<br>○</div>
+                            <span class="text-[11px] font-bold text-indigo-600" data-va="3 esq + 1 dreta" data-es="3 izq + 1 der">3 esq + 1 dreta</span>
+                        </button>
+                        <button onclick="playSingleNote('G4')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 transition-all">
+                            <span class="font-black text-lg text-cyan-600 block">SOL</span>
+                            <div class="text-xs font-mono leading-tight my-2 text-slate-800">[●] darrere<br>●<br>●<br>●<br>---<br>○<br>○<br>○<br>○</div>
+                            <span class="text-[11px] font-bold text-indigo-600" data-va="Només 3 esq" data-es="Solo 3 izq">Només 3 esq</span>
+                        </button>
+                        <button onclick="playSingleNote('A4')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl border-2 border-slate-200 hover:border-indigo-400 transition-all">
+                            <span class="font-black text-lg text-blue-600 block">LA</span>
+                            <div class="text-xs font-mono leading-tight my-2 text-slate-800">[●] darrere<br>●<br>●<br>○<br>---<br>○<br>○<br>○<br>○</div>
+                            <span class="text-[11px] font-bold text-indigo-600" data-va="Només 2 esq" data-es="Solo 2 izq">Només 2 esq</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Partitura por trozos -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800" data-va="2. Practica per frases (Cada frase es repeteix 2 vegades):" data-es="2. Practica por frases (Cada frase se repite 2 veces):">2. Practica per frases (Cada frase es repeteix 2 vegades):</h3>
+
+                    <div class="bg-indigo-50/70 border border-indigo-200 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-extrabold uppercase text-indigo-600">Frase 1 (x2)</span>
+                            <p class="text-sm italic text-slate-600">"La le-chu-za, la le-chu-za"</p>
+                            <p class="text-lg font-black text-slate-900 mt-1 tracking-wide">DO - RE - MI - DO &nbsp;|&nbsp; DO - RE - MI - DO</p>
+                        </div>
+                        <button onclick="playPhrase(1)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm shrink-0">
+                            ▶️ <span data-va="Escoltar Frase 1" data-es="Escuchar Frase 1">Escoltar Frase 1</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-purple-50/70 border border-purple-200 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-extrabold uppercase text-purple-600">Frase 2 (x2)</span>
+                            <p class="text-sm italic text-slate-600">"ha-ce shhh, ha-ce shhh"</p>
+                            <p class="text-lg font-black text-slate-900 mt-1 tracking-wide">MI - FA - SOL (llarg) &nbsp;|&nbsp; MI - FA - SOL (llarg)</p>
+                        </div>
+                        <button onclick="playPhrase(2)" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-lg text-sm shrink-0">
+                            ▶️ <span data-va="Escoltar Frase 2" data-es="Escuchar Frase 2">Escoltar Frase 2</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-amber-50/70 border border-amber-200 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-extrabold uppercase text-amber-700">Frase 3 (x2)</span>
+                            <p class="text-sm italic text-slate-600">"To-dos ca-lla-di-tos, co-mo la le-chu-za"</p>
+                            <p class="text-lg font-black text-slate-900 mt-1 tracking-wide">SOL-LA-SOL-FA - MI - DO &nbsp;|&nbsp; SOL-LA-SOL-FA - MI - DO</p>
+                        </div>
+                        <button onclick="playPhrase(3)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg text-sm shrink-0">
+                            ▶️ <span data-va="Escoltar Frase 3" data-es="Escuchar Frase 3">Escoltar Frase 3</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-emerald-50/70 border border-emerald-200 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-extrabold uppercase text-emerald-700">Frase 4 Final (x2)</span>
+                            <p class="text-sm italic text-slate-600">"ha-ce shhh, ha-ce shhh"</p>
+                            <p class="text-lg font-black text-slate-900 mt-1 tracking-wide">DO - SOL (greu) - DO (llarg) &nbsp;|&nbsp; DO - SOL (greu) - DO (llarg)</p>
+                        </div>
+                        <button onclick="playPhrase(4)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-sm shrink-0">
+                            ▶️ <span data-va="Escoltar Frase 4" data-es="Escuchar Frase 4">Escoltar Frase 4</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- CONTENIDO EXCLUSIVO DEL CUADERNO TOTAL     -->
+        <!-- ========================================== -->
+        <section id="sec-total-teoria" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-purple-600 text-white rounded-2xl p-5 shadow-md">
+                <span class="bg-purple-500 text-purple-100 text-xs font-extrabold px-2.5 py-1 rounded-full uppercase">Temari Complet</span>
+                <h2 class="text-xl font-extrabold mt-1" data-va="📚 Examen de Música Total: Tota la Unitat" data-es="📚 Examen de Música Total: Toda la Unidad">📚 Examen de Música Total: Tota la Unitat</h2>
+                <p class="text-sm text-purple-100 mt-1" data-va="Inclou Les 4 Qualitats del So (Pàg. 11), Figures, Silencis i Matisos Musicals." data-es="Incluye Las 4 Cualidades del Sonido (Pág. 11), Figuras, Silencios y Matices Musicales.">Inclou Les 4 Qualitats del So (Pàg. 11), Figures, Silencis i Matisos Musicals.</p>
+            </div>
+
+            <!-- 4 Qualitats del so -->
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <h3 class="text-lg font-extrabold text-slate-800 mb-3" data-va="1. Les 4 Qualitats del So (Pàgina 11)" data-es="1. Las 4 Cualidades del Sonido (Página 11)">1. Les 4 Qualitats del So (Pàgina 11)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                    <div class="bg-red-50 border border-red-200 p-4 rounded-xl">
+                        <span class="font-black text-red-700 block mb-1">1. ALTURA</span>
+                        <p class="text-slate-700" data-va="Sons <b>aguts</b> (fins, dreta del xilòfon) o <b>greus</b> (grossos, esquerra)." data-es="Sonidos <b>agudos</b> (finos, derecha del xilófono) o <b>graves</b> (gruesos, izquierda).">Sons <b>aguts</b> (fins, dreta del xilòfon) o <b>greus</b> (grossos, esquerra).</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                        <span class="font-black text-amber-700 block mb-1">2. DURACIÓ</span>
+                        <p class="text-slate-700" data-va="Sons <b>llargs</b> (metal·lòfon) o <b>curts</b> (xilòfon)." data-es="Sonidos <b>largos</b> (metalófono) o <b>cortos</b> (xilófono).">Sons <b>llargs</b> (metal·lòfon) o <b>curts</b> (xilòfon).</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                        <span class="font-black text-emerald-700 block mb-1">3. INTENSITAT</span>
+                        <p class="text-slate-700" data-va="Sons <b>forts</b> (colpejar amb força) o <b>febles</b> (suaument)." data-es="Sonidos <b>fuertes</b> (golpear con fuerza) o <b>débiles</b> (suavemente).">Sons <b>forts</b> (colpejar amb força) o <b>febles</b> (suaument).</p>
+                    </div>
+                    <div class="bg-cyan-50 border border-cyan-200 p-4 rounded-xl">
+                        <span class="font-black text-cyan-700 block mb-1">4. TIMBRE</span>
+                        <p class="text-slate-700" data-va="Color sonor que diferencia <b>veus o instruments</b>." data-es="Color sonoro que diferencia <b>voces o instrumentos</b>.">Color sonor que diferencia <b>veus o instruments</b>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figures i Silencis -->
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <h3 class="text-lg font-extrabold text-slate-800 mb-3" data-va="2. Figures, Duracions i Silencis" data-es="2. Figuras, Duraciones y Silencios">2. Figures, Duracions i Silencis</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-sm">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><div class="text-2xl">𝅝</div><p class="font-bold">Redona</p><span class="text-xs font-extrabold text-indigo-600">4 temps</span></div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><div class="text-2xl">𝅗𝅥</div><p class="font-bold">Blanca</p><span class="text-xs font-extrabold text-indigo-600">2 temps</span></div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><div class="text-2xl">𝅘𝅥</div><p class="font-bold">Negra</p><span class="text-xs font-extrabold text-indigo-600">1 temps</span></div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><div class="text-2xl">𝅘𝅥𝅮</div><p class="font-bold">Corxera</p><span class="text-xs font-extrabold text-indigo-600">1/2 temps</span></div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><div class="text-2xl">𝅘𝅥𝅯</div><p class="font-bold">Semicorxera</p><span class="text-xs font-extrabold text-indigo-600">1/4 temps</span></div>
+                </div>
+            </div>
+
+            <!-- Matisos -->
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-slate-100">
+                <h3 class="text-lg font-extrabold text-slate-800 mb-3" data-va="3. Matisos Musicals (Intensitat)" data-es="3. Matices Musicales (Intensidad)">3. Matisos Musicals (Intensitat)</h3>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-sm">
+                    <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-200"><span class="font-black text-blue-800">pp</span><p class="text-xs" data-va="Molt fluix" data-es="Muy suave">Molt fluix</p></div>
+                    <div class="bg-sky-50 p-2.5 rounded-xl border border-sky-200"><span class="font-black text-sky-800">p</span><p class="text-xs" data-va="Fluix" data-es="Suave">Fluix</p></div>
+                    <div class="bg-teal-50 p-2.5 rounded-xl border border-teal-200"><span class="font-black text-teal-800">mp</span><p class="text-xs" data-va="Mig fluix" data-es="Medio suave">Mig fluix</p></div>
+                    <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200"><span class="font-black text-amber-800">mf</span><p class="text-xs" data-va="Mig fort" data-es="Medio fuerte">Mig fort</p></div>
+                    <div class="bg-orange-50 p-2.5 rounded-xl border border-orange-200"><span class="font-black text-orange-800">f</span><p class="text-xs" data-va="Fort" data-es="Fuerte">Fort</p></div>
+                    <div class="bg-red-50 p-2.5 rounded-xl border border-red-200"><span class="font-black text-red-800">ff</span><p class="text-xs" data-va="Molt fort" data-es="Muy fuerte">Molt fort</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-total-practica" class="tab-content hidden space-y-6 animate-fade-in">
+            <div class="bg-white rounded-2xl p-6 card-shadow border border-purple-200">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800" data-va="🎼 Fitxa Extra: Qualitats, Figures i Matisos" data-es="🎼 Ficha Extra: Cualidades, Figuras y Matices">🎼 Fitxa Extra: Qualitats, Figures i Matisos</h2>
+                        <p class="text-sm text-slate-500" data-va="Practica els continguts ampliats del temari total." data-es="Practica los contenidos ampliados del temario total.">Practica els continguts ampliats del temari total.</p>
+                    </div>
+                    <span id="score-total-extra" class="hidden px-4 py-2 rounded-xl font-extrabold text-sm"></span>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="1. Si toques cap a la dreta del xilòfon (plaques més menudes), el so es fa més..." data-es="1. Si tocas hacia la derecha del xilófono (placas más pequeñas), el sonido se hace más...">1. Si toques cap a la dreta del xilòfon (plaques més menudes), el so es fa més...</p>
+                        <select id="tot_q1" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria una opció --</option>
+                            <option value="ok">Agut (Altura)</option>
+                            <option value="bad1">Greu (Altura)</option>
+                            <option value="bad2">Fort (Intensitat)</option>
+                        </select>
+                        <div id="res_tot_q1" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="2. Quant sumen: Blanca + Negra + 2 Corxeres?" data-es="2. ¿Cuánto suman: Blanca + Negra + 2 Corcheas?">2. Quant sumen: Blanca + Negra + 2 Corxeres?</p>
+                        <select id="tot_q2" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria el resultat --</option>
+                            <option value="bad1">3 temps</option>
+                            <option value="ok">4 temps (2 + 1 + 1)</option>
+                            <option value="bad2">6 temps</option>
+                        </select>
+                        <div id="res_tot_q2" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-2" data-va="3. Què significa el matís 'ff' (fortissimo)?" data-es="3. ¿Qué significa el matiz 'ff' (fortissimo)?">3. Què significa el matís 'ff' (fortissimo)?</p>
+                        <select id="tot_q3" class="w-full bg-white border-2 border-slate-300 rounded-lg p-2.5 font-semibold">
+                            <option value="">-- Tria una opció --</option>
+                            <option value="bad1">Molt fluix</option>
+                            <option value="ok">Molt fort</option>
+                            <option value="bad2">Silenci</option>
+                        </select>
+                        <div id="res_tot_q3" class="hidden mt-3 p-3 rounded-lg border text-sm"></div>
+                    </div>
+                </div>
+
+                <button onclick="checkTotalExtra()" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all">
+                    <span data-va="✅ Comprovar Fitxa Extra" data-es="✅ Comprobar Ficha Extra">✅ Comprovar Fitxa Extra</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p data-va="Material d'estudi adaptat per a Vega • Música 1r d'ESO • Tu pots!" data-es="Material de estudio adaptado para Vega • Música 1º de ESO • ¡Tú puedes!">Material d'estudi adaptat per a Vega • Música 1r d'ESO • Tu pots!</p>
+    </footer>
+    </div> <!-- Fin app-container -->
+
+    <!-- Lógica JavaScript -->
+    <script>
+        let currentLang = 'va';
+        let currentMode = 'adaptado';
+        let activeSubjectId = null;
+
+        // Datos de las 12 asignaturas de Vega
+        const subjectsData = [
+            {
+                id: 1,
+                icon: '🤝',
+                titleVa: '1. Atenció Educativa',
+                titleEs: '1. Atención Educativa',
+                descVa: 'Valors, convivència, treball en equip i creixement personal.',
+                descEs: 'Valores, convivencia, trabajo en equipo y crecimiento personal.',
+                gradient: 'from-teal-500 via-emerald-600 to-green-700',
+                badgeColor: 'bg-teal-400/20 text-teal-200 border-teal-300/30',
+                ready: false
+            },
+            {
+                id: 2,
+                icon: '🧬',
+                titleVa: '2. Biologia i Geologia',
+                titleEs: '2. Biología y Geología',
+                descVa: 'La Terra, els éssers vius, les cèl·lules, les plantes i els animals.',
+                descEs: 'La Tierra, los seres vivos, las células, las plantas y los animales.',
+                gradient: 'from-emerald-500 via-green-600 to-lime-700',
+                badgeColor: 'bg-amber-400 text-amber-950 border-amber-300',
+                url: 'https://rtorrecillasg.github.io/biologia_gologia/',
+                ready: true
+            },
+            {
+                id: 3,
+                icon: '🏃‍♀️',
+                titleVa: '3. Educació Física',
+                titleEs: '3. Educación Física',
+                descVa: 'Esport, salut, escalfament, jocs i hàbits saludables.',
+                descEs: 'Deporte, salud, calentamiento, juegos y hábitos saludables.',
+                gradient: 'from-orange-500 via-amber-600 to-red-600',
+                badgeColor: 'bg-orange-400/20 text-orange-200 border-orange-300/30',
+                ready: false
+            },
+            {
+                id: 4,
+                icon: '🌍',
+                titleVa: '4. Geografia i Història',
+                titleEs: '4. Geografía e Historia',
+                descVa: 'Mapes, continents, climes, la Prehistòria i les primeres civilitzacions.',
+                descEs: 'Mapas, continentes, climas, la Prehistoria y las primeras civilizaciones.',
+                gradient: 'from-amber-600 via-yellow-600 to-orange-700',
+                badgeColor: 'bg-amber-400 text-amber-950 border-amber-300',
+                url: 'https://rtorrecillasg.github.io/geografia_historia/',
+                ready: true
+            },
+            {
+                id: 5,
+                icon: '🎭',
+                titleVa: '5. Laboratori d’Arts Escèniques',
+                titleEs: '5. Laboratorio de Artes Escénicas',
+                descVa: 'Teatre, expressió corporal, creativitat i posada en escena.',
+                descEs: 'Teatro, expresión corporal, creatividad y puesta en escena.',
+                gradient: 'from-fuchsia-600 via-pink-600 to-rose-700',
+                badgeColor: 'bg-fuchsia-400/20 text-fuchsia-200 border-fuchsia-300/30',
+                ready: false
+            },
+            {
+                id: 6,
+                icon: '📖',
+                titleVa: '6. Llengua Castellana i Literatura',
+                titleEs: '6. Lengua Castellana y Literatura',
+                descVa: 'Lectura, ortografia, gramàtica, comunicació i contes.',
+                descEs: 'Lectura, ortografía, gramática, comunicación y cuentos.',
+                gradient: 'from-red-500 via-rose-600 to-pink-700',
+                badgeColor: 'bg-amber-400 text-amber-950 border-amber-300',
+                url: 'https://rtorrecillasg.github.io/castellano/',
+                ready: true
+            },
+            {
+                id: 7,
+                icon: '🇬🇧',
+                titleVa: '7. Llengua Estrangera (Anglès)',
+                titleEs: '7. Lengua Extranjera (Inglés)',
+                descVa: 'Vocabulari, verbs, frases útils i comprensió en anglès.',
+                descEs: 'Vocabulario, verbos, frases útiles y comprensión en inglés.',
+                gradient: 'from-blue-600 via-indigo-600 to-sky-700',
+                badgeColor: 'bg-amber-400 text-amber-950 border-amber-300',
+                url: 'https://rtorrecillasg.github.io/ingles/',
+                ready: true
+            },
+            {
+                id: 8,
+                icon: '📐',
+                titleVa: '8. Matemàtiques',
+                titleEs: '8. Matemáticas',
+                descVa: 'Nombres naturals, fraccions, potències, geometria i problemes pas a pas.',
+                descEs: 'Números naturales, fracciones, potencias, geometría y problemas paso a paso.',
+                gradient: 'from-cyan-600 via-blue-600 to-indigo-800',
+                badgeColor: 'bg-amber-400 text-amber-950 border-amber-300',
+                url: 'https://rtorrecillasg.github.io/matematicas/',
+                ready: true
+            },
+            {
+                id: 9,
+                icon: '🎵',
+                titleVa: '9. Música',
+                titleEs: '9. Música',
+                descVa: 'Notes (Do-Do\'), El So, El Soroll, Qualitats, 3 Exàmens i La Lechuza.',
+                descEs: 'Notas (Do-Do\'), El Sonido, El Ruido, Cualidades, 3 Exámenes y La Lechuza.',
+                gradient: 'from-indigo-600 via-purple-600 to-pink-500',
+                badgeColor: 'bg-amber-400 text-amber-950 border-amber-300',
+                url: 'https://rtorrecillasg.github.io/musica/',
+                ready: true
+            },
+            {
+                id: 10,
+                icon: '💻',
+                titleVa: '10. Tecnologia i Digitalització',
+                titleEs: '10. Tecnología y Digitalización',
+                descVa: 'Ordinadors, internet segur, materials, eines i projectes.',
+                descEs: 'Ordenadores, internet seguro, materiales, herramientas y proyectos.',
+                gradient: 'from-slate-600 via-zinc-700 to-neutral-800',
+                badgeColor: 'bg-slate-400/20 text-slate-200 border-slate-300/30',
+                ready: false
+            },
+            {
+                id: 11,
+                icon: '🌟',
+                titleVa: '11. Tutoria',
+                titleEs: '11. Tutoría',
+                descVa: 'Organització de l\'agenda, tècniques d\'estudi i emocions.',
+                descEs: 'Organización de la agenda, técnicas de estudio y emociones.',
+                gradient: 'from-violet-600 via-purple-600 to-indigo-700',
+                badgeColor: 'bg-violet-400/20 text-violet-200 border-violet-300/30',
+                ready: false
+            },
+            {
+                id: 12,
+                icon: '🦇',
+                titleVa: '12. Valencià: Llengua i Literatura',
+                titleEs: '12. Valenciano: Lengua y Literatura',
+                descVa: 'Vocabulari, accents, comprensió lectora i expressió escrita.',
+                descEs: 'Vocabulario, acentos, comprensión lectora y expresión escrita.',
+                gradient: 'from-yellow-500 via-amber-500 to-red-600',
+                badgeColor: 'bg-amber-400 text-amber-950 border-amber-300',
+                url: 'https://rtorrecillasg.github.io/valenciano',
+                ready: true
+            }
+        ];
+
+        function renderSubjectsHub() {
+            const grid = document.getElementById('subjects-grid');
+            grid.innerHTML = '';
+            subjectsData.forEach(sub => {
+                const isExternal = Boolean(sub.url);
+                const card = document.createElement(isExternal ? 'a' : 'button');
+                if (isExternal) {
+                    card.href = sub.url;
+                    card.target = '_blank';
+                    card.rel = 'noopener noreferrer';
+                } else {
+                    card.type = 'button';
+                    card.onclick = () => openSubject(sub.id);
+                }
+                card.className = `group text-left rounded-3xl p-5 bg-gradient-to-br ${sub.gradient} shadow-xl border-2 ${sub.ready ? 'border-amber-300 ring-2 ring-amber-300/50' : 'border-white/20'} hover:scale-[1.03] transition-all flex flex-col justify-between relative overflow-hidden`;
+                
+                const badgeTextVa = sub.ready ? '⭐ Quadern Actiu' : '📁 Portada';
+                const badgeTextEs = sub.ready ? '⭐ Cuaderno Activo' : '📁 Portada';
+                const actionTextVa = isExternal ? 'Entrar al quadern' : 'Obrir portada';
+                const actionTextEs = isExternal ? 'Entrar al cuaderno' : 'Abrir portada';
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                        <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform shadow-inner">
+                            ${sub.icon}
+                        </div>
+                        <span class="text-[11px] font-black px-2.5 py-1 rounded-full border ${sub.badgeColor}" data-va="${badgeTextVa}" data-es="${badgeTextEs}">
+                            ${currentLang === 'va' ? badgeTextVa : badgeTextEs}
+                        </span>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-white leading-snug mb-1.5" data-va="${sub.titleVa}" data-es="${sub.titleEs}">
+                            ${currentLang === 'va' ? sub.titleVa : sub.titleEs}
+                        </h2>
+                        <p class="text-xs text-white/85 line-clamp-2 leading-relaxed" data-va="${sub.descVa}" data-es="${sub.descEs}">
+                            ${currentLang === 'va' ? sub.descVa : sub.descEs}
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-2.5 border-t border-white/15 flex items-center justify-between text-xs font-extrabold text-white/95">
+                        <span data-va="${actionTextVa}" data-es="${actionTextEs}">${currentLang === 'va' ? actionTextVa : actionTextEs}</span>
+                        <span class="group-hover:translate-x-1 transition-transform">➡️</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openSubject(id) {
+            const sub = subjectsData.find(s => s.id === id);
+            if (sub && sub.url) {
+                window.open(sub.url, '_blank', 'noopener,noreferrer');
+                return;
+            }
+            activeSubjectId = id;
+            document.getElementById('subjects-hub').classList.add('hidden');
+            document.getElementById('subject-cover-screen').classList.add('hidden');
+            document.getElementById('cover-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+
+            // Resto de asignaturas van a su portada personalizada
+            const screen = document.getElementById('subject-cover-screen');
+            screen.className = `min-h-screen flex flex-col justify-between bg-gradient-to-br ${sub.gradient} text-white p-4 sm:p-8 transition-all`;
+            
+            document.getElementById('scover-icon-box').textContent = sub.icon;
+            document.getElementById('scover-badge').setAttribute('data-va', `1r d'ESO • Assignatura ${sub.id} de 12`);
+            document.getElementById('scover-badge').setAttribute('data-es', `1º de ESO • Asignatura ${sub.id} de 12`);
+            
+            document.getElementById('scover-title').setAttribute('data-va', sub.titleVa);
+            document.getElementById('scover-title').setAttribute('data-es', sub.titleEs);
+            
+            document.getElementById('scover-subtitle').setAttribute('data-va', sub.descVa);
+            document.getElementById('scover-subtitle').setAttribute('data-es', sub.descEs);
+            
+            setLanguage(currentLang);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function backToSubjectsHub() {
+            activeSubjectId = null;
+            document.getElementById('subject-cover-screen').classList.add('hidden');
+            document.getElementById('cover-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('subjects-hub').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openNotebook(mode) {
+            currentMode = mode;
+            document.getElementById('cover-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+
+            const titleEl = document.getElementById('header-notebook-title');
+            const subEl = document.getElementById('header-notebook-sub');
+
+            // Eliminar pestañas extra de 'Total' si existían previamente
+            const extraTab1 = document.getElementById('tab-total-teoria');
+            const extraTab2 = document.getElementById('tab-total-practica');
+            if (extraTab1) extraTab1.remove();
+            if (extraTab2) extraTab2.remove();
+
+            if (mode === 'adaptado') {
+                titleEl.setAttribute('data-va', 'Examen de Música Adaptat • Vega');
+                titleEl.setAttribute('data-es', 'Examen de Música Adaptado • Vega');
+                subEl.setAttribute('data-va', "Notes (Do a Do') • El So (Pàg. 8) • El Soroll (Pàg. 9)");
+                subEl.setAttribute('data-es', "Notas (Do a Do') • El Sonido (Pág. 8) • El Ruido (Pág. 9)");
+            } else {
+                titleEl.setAttribute('data-va', 'Examen de Música Total • Vega');
+                titleEl.setAttribute('data-es', 'Examen de Música Total • Vega');
+                subEl.setAttribute('data-va', 'Unitat Completa: Qualitats, Figures, Silencis, Matisos i So');
+                subEl.setAttribute('data-es', 'Unidad Completa: Cualidades, Figuras, Silencios, Matices y Sonido');
+
+                // Añadir pestañas de teoría y práctica ampliada al menú de navegación
+                const navContainer = document.querySelector('#app-container nav div');
+                const btnTotTeoria = document.createElement('button');
+                btnTotTeoria.id = 'tab-total-teoria';
+                btnTotTeoria.onclick = () => switchTab('total-teoria');
+                btnTotTeoria.className = 'tab-btn bg-purple-50 text-purple-800 hover:bg-purple-100 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-purple-200';
+                btnTotTeoria.innerHTML = `<span data-va="📖 Teoria Ampliada" data-es="📖 Teoría Ampliada">${currentLang === 'va' ? '📖 Teoria Ampliada' : '📖 Teoría Ampliada'}</span>`;
+
+                const btnTotPrac = document.createElement('button');
+                btnTotPrac.id = 'tab-total-practica';
+                btnTotPrac.onclick = () => switchTab('total-practica');
+                btnTotPrac.className = 'tab-btn bg-purple-50 text-purple-800 hover:bg-purple-100 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-purple-200';
+                btnTotPrac.innerHTML = `<span data-va="🎼 Fitxa Extra Total" data-es="🎼 Ficha Extra Total">${currentLang === 'va' ? '🎼 Fitxa Extra Total' : '🎼 Ficha Extra Total'}</span>`;
+
+                navContainer.appendChild(btnTotTeoria);
+                navContainer.appendChild(btnTotPrac);
+            }
+
+            setLanguage(currentLang);
+            switchTab('teoria');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function backToCover() {
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('cover-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const btnPairs = [
+                ['btn-va', 'btn-es', 'bg-indigo-600 text-white shadow-sm', 'text-slate-600 hover:text-slate-900'],
+                ['cover-btn-va', 'cover-btn-es', 'bg-white text-indigo-700 shadow-sm', 'text-white hover:bg-white/10'],
+                ['hub-btn-va', 'hub-btn-es', 'bg-white text-indigo-900 shadow-sm', 'text-white hover:bg-white/10'],
+                ['scover-btn-va', 'scover-btn-es', 'bg-white text-slate-900 shadow-sm', 'text-white hover:bg-white/10']
+            ];
+
+            btnPairs.forEach(([idVa, idEs, activeCls, inactiveCls]) => {
+                const elVa = document.getElementById(idVa);
+                const elEs = document.getElementById(idEs);
+                if (elVa && elEs) {
+                    if (lang === 'va') {
+                        elVa.className = `px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${activeCls}`;
+                        elEs.className = `px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${inactiveCls}`;
+                    } else {
+                        elEs.className = `px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${activeCls}`;
+                        elVa.className = `px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${inactiveCls}`;
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-va]').forEach(el => {
+                el.innerHTML = el.getAttribute(`data-${lang}`);
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                if (btn.id === 'tab-examen') {
+                    btn.className = 'tab-btn bg-amber-50 text-amber-800 hover:bg-amber-100 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-amber-200';
+                } else if (btn.id === 'tab-flauta') {
+                    btn.className = 'tab-btn bg-emerald-50 text-emerald-800 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-emerald-200';
+                } else if (btn.id && btn.id.startsWith('tab-total')) {
+                    btn.className = 'tab-btn bg-purple-50 text-purple-800 hover:bg-purple-100 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-purple-200';
+                } else {
+                    btn.className = 'tab-btn bg-white text-slate-600 hover:bg-indigo-50 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-slate-200';
+                }
+            });
+
+            const targetSec = document.getElementById('sec-' + tabId);
+            if (targetSec) targetSec.classList.remove('hidden');
+
+            const activeBtn = document.getElementById('tab-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-slate-600', 'bg-amber-50', 'text-amber-800', 'bg-emerald-50', 'text-emerald-800', 'bg-purple-50', 'text-purple-800');
+                activeBtn.classList.add('tab-active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showFeedback(elementId, isCorrect, msgVa, msgEs) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-300', 'text-emerald-900', 'bg-red-50', 'border-red-300', 'text-red-900');
+            if (isCorrect) {
+                el.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-900');
+                el.innerHTML = `<span class="font-extrabold">✅ ${currentLang === 'va' ? 'Molt bé, Vega!' : '¡Muy bien, Vega!'}</span> ${currentLang === 'va' ? msgVa : msgEs}`;
+            } else {
+                el.classList.add('bg-red-50', 'border-red-300', 'text-red-900');
+                el.innerHTML = `<span class="font-extrabold">❌ ${currentLang === 'va' ? 'Fixa\'t bé:' : 'Fíjate bien:'}</span> ${currentLang === 'va' ? msgVa : msgEs}`;
+            }
+        }
+
+        function showBadgeScore(badgeId, score, total) {
+            const el = document.getElementById(badgeId);
+            if (!el) return;
+            el.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-amber-100', 'text-amber-800');
+            el.classList.add(score >= total * 0.6 ? 'bg-emerald-100' : 'bg-amber-100', score >= total * 0.6 ? 'text-emerald-800' : 'text-amber-800');
+            el.textContent = `${score} / ${total}`;
+        }
+
+        // --- COMPROBACIÓN FICHA 1 ---
+        function checkFicha1() {
+            const ans1 = { f1_n1: 'SOL', f1_n2: 'DO', f1_n3: 'SI', f1_n4: 'MI', f1_n5: "DO'", f1_n6: 'RE', f1_n7: 'LA', f1_n8: 'FA' };
+            let ok1 = 0;
+            for (const [id, val] of Object.entries(ans1)) {
+                if (document.getElementById(id).value === val) ok1++;
+            }
+            showFeedback('res_f1_pent1', ok1 === 8,
+                ok1 === 8 ? 'Has encertat totes les 8 notes del pentagrama!' : `Has encertat ${ok1} de 8. L'ordre correcte és: 1: SOL, 2: DO (amb ratlleta), 3: SI (3a línia), 4: MI (1a línia), 5: DO' (3r espai), 6: RE (sota 1a línia), 7: LA (2n espai), 8: FA (1r espai).`,
+                ok1 === 8 ? '¡Has acertado todas las 8 notas del pentagrama!' : `Has acertado ${ok1} de 8. El orden correcto es: 1: SOL, 2: DO (con rayita), 3: SI (3ª línea), 4: MI (1ª línea), 5: DO' (3er espacio), 6: RE (bajo 1ª línea), 7: LA (2º espacio), 8: FA (1er espacio).`
+            );
+
+            const ans2 = { f1_na: 'FA', f1_nb: "DO'", f1_nc: 'RE', f1_nd: 'SOL', f1_ne: 'DO' };
+            let ok2 = 0;
+            for (const [id, val] of Object.entries(ans2)) {
+                if (document.getElementById(id).value === val) ok2++;
+            }
+            showFeedback('res_f1_pent2', ok2 === 5,
+                ok2 === 5 ? 'Genial! Les 5 notes estan perfectes.' : `Has encertat ${ok2} de 5. L'ordre és: A: FA (1r espai), B: DO' (3r espai), C: RE (sota 1a línia), D: SOL (2a línia), E: DO (amb ratlleta).`,
+                ok2 === 5 ? '¡Genial! Las 5 notas están perfectas.' : `Has acertado ${ok2} de 5. El orden es: A: FA (1er espacio), B: DO' (3er espacio), C: RE (bajo 1ª línea), D: SOL (2ª línea), E: DO (con rayita).`
+            );
+
+            showBadgeScore('score-ficha1', ok1 + ok2, 13);
+        }
+
+        // --- COMPROBACIÓN FICHA 2 ---
+        function checkFicha2() {
+            let score = 0;
+            const q1 = document.getElementById('f2_q1').value === 'ok'; if (q1) score++;
+            showFeedback('res_f2_q1', q1, 'El so sorgeix sempre quan un cos o objecte vibra (guitarra, tambor...).', 'El sonido surge siempre cuando un cuerpo u objeto vibra (guitarra, tambor...).');
+
+            const q2 = document.getElementById('f2_q2').value === 'ok'; if (q2) score++;
+            showFeedback('res_f2_q2', q2, 'La vibració es transmet en forma d\'ones sonores per l\'aire, l\'aigua o la fusta.', 'La vibración se transmite en forma de ondas sonoras por el aire, el agua o la madera.');
+
+            const q3 = document.getElementById('f2_q3').value === 'ok'; if (q3) score++;
+            showFeedback('res_f2_q3', q3, 'Quan tires una pedra a l\'aigua fa ondulacions semblants a les ones sonores.', 'Cuando tiras una piedra al agua hace ondulaciones parecidas a las ondas sonoras.');
+
+            const q4 = document.getElementById('f2_q4').value === 'ok'; if (q4) score++;
+            showFeedback('res_f2_q4', q4, 'La membrana elàstica de l\'orella es diu timpà.', 'La membrana elástica del oído se llama tímpano.');
+
+            const q5 = document.getElementById('f2_q5').value === 'ok'; if (q5) score++;
+            showFeedback('res_f2_q5', q5, 'Vertader! El timpà vibra i envia la informació al cervell.', '¡Verdadero! El tímpano vibra y envía la información al cerebro.');
+
+            showBadgeScore('score-ficha2', score, 5);
+        }
+
+        // --- COMPROBACIÓN FICHA 3 ---
+        function checkFicha3() {
+            let score = 0;
+            const q1 = document.getElementById('f3_q1').value === 'ok'; if (q1) score++;
+            showFeedback('res_f3_q1', q1, 'És subjectiu i imprecís perquè molts instruments de percussió fan soroll i no molesten.', 'Es subjetivo e impreciso porque muchos instrumentos de percusión hacen ruido y no molestan.');
+
+            const q2 = document.getElementById('f3_q2').value === 'ok'; if (q2) score++;
+            showFeedback('res_f3_q2', q2, 'L\'ona del so és ordenada i regular; la del soroll és desordenada i irregular.', 'La onda del sonido es ordenada y regular; la del ruido es desordenada e irregular.');
+
+            const q3 = document.getElementById('f3_q3').value === 'ok'; if (q3) score++;
+            showFeedback('res_f3_q3', q3, 'L\'excés de soroll s\'anomena contaminació acústica.', 'El exceso de ruido se llama contaminación acústica.');
+
+            const q4 = document.getElementById('f3_q4').value === 'ok'; if (q4) score++;
+            showFeedback('res_f3_q4', q4, 'Produeix dificultat de comunicació, trastorns del son, estrés, pèrdua auditiva i conductes agressives.', 'Produce dificultad de comunicación, trastornos del sueño, estrés, pérdida auditiva y conductas agresivas.');
+
+            const q5 = document.getElementById('f3_q5').value === 'ok'; if (q5) score++;
+            showFeedback('res_f3_q5', q5, 'Es mesura en decibels (dB) amb el sonòmetre, i el límit recomanat per l\'OMS és de 65 dB.', 'Se mide en decibelios (dB) con el sonómetro, y el límite recomendado por la OMS es de 65 dB.');
+
+            showBadgeScore('score-ficha3', score, 5);
+        }
+
+        // --- COMPROBACIÓN FICHA 4 ---
+        function checkFicha4() {
+            let score = 0;
+            const q1 = document.getElementById('f4_q1').value === 'ok'; if (q1) score++;
+            showFeedback('res_f4_q1', q1, 'Les fonts de soroll ambiental són els mitjans de transport, l\'activitat industrial, la construcció i les zones d\'oci.', 'Las fuentes de ruido ambiental son los medios de transporte, la actividad industrial, la construcción y las zonas de ocio.');
+
+            const q2 = document.getElementById('f4_q2').value === 'ok'; if (q2) score++;
+            showFeedback('res_f4_q2', q2, 'Converteixen el soroll extramusical (objectes quotidians com una batedora) en una obra d\'art.', 'Convierten el ruido extramusical (objetos cotidianos como una batidora) en una obra de arte.');
+
+            const q3 = document.getElementById('f4_q3').value === 'ok'; if (q3) score++;
+            showFeedback('res_f4_q3', q3, 'Primer vibra l\'objecte, viatja en ones sonores, vibra el timpà i arriba al cervell.', 'Primero vibra el objeto, viaja en ondas sonoras, vibra el tímpano y llega al cerebro.');
+
+            const q4 = document.getElementById('f4_q4').value === 'ok'; if (q4) score++;
+            showFeedback('res_f4_q4', q4, 'La conversa normal (50 dB) i els ocells (10 dB) estan per davall dels 65 dB.', 'La conversación normal (50 dB) y los pájaros (10 dB) están por debajo de los 65 dB.');
+
+            const q5 = document.getElementById('f4_q5').value === 'ok'; if (q5) score++;
+            showFeedback('res_f4_q5', q5, 'Els 3 primers espais (de baix a dalt) són FA - LA - DO\'.', 'Los 3 primeros espacios (de abajo a arriba) son FA - LA - DO\'.');
+
+            showBadgeScore('score-ficha4', score, 5);
+        }
+
+        // --- COMPROBACIÓN FICHA EXTRA TOTAL ---
+        function checkTotalExtra() {
+            let score = 0;
+            const q1 = document.getElementById('tot_q1').value === 'ok'; if (q1) score++;
+            showFeedback('res_tot_q1', q1, 'Cap a la dreta (plaques més menudes) el so es fa més fi o agut.', 'Hacia la derecha (placas más pequeñas) el sonido se hace más fino o agudo.');
+
+            const q2 = document.getElementById('tot_q2').value === 'ok'; if (q2) score++;
+            showFeedback('res_tot_q2', q2, 'Blanca (2) + Negra (1) + 2 Corxeres (1) = 4 temps.', 'Blanca (2) + Negra (1) + 2 Corcheas (1) = 4 tiempos.');
+
+            const q3 = document.getElementById('tot_q3').value === 'ok'; if (q3) score++;
+            showFeedback('res_tot_q3', q3, 'ff (fortissimo) significa molt fort.', 'ff (fortissimo) significa muy fuerte.');
+
+            showBadgeScore('score-total-extra', score, 3);
+        }
+
+        // --- SIMULACROS DE EXAMEN (JUEGO 3 NIVELES) ---
+        function switchSimulacro(num) {
+            document.querySelectorAll('.sim-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.sim-btn').forEach(b => {
+                b.className = 'sim-btn bg-slate-100 text-slate-600 hover:bg-amber-50 font-extrabold py-3 px-2 sm:px-4 rounded-xl border border-slate-200 text-xs sm:text-sm transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5';
+            });
+            document.getElementById('sim-panel-' + num).classList.remove('hidden');
+            document.getElementById('btn-sim-' + num).className = 'sim-btn bg-amber-500 text-white font-extrabold py-3 px-2 sm:px-4 rounded-xl shadow-md text-xs sm:text-sm transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5';
+        }
+
+        function checkSimulacro(num) {
+            let pts = 0;
+            if (num === 1) {
+                const nOk = document.getElementById('s1_n1').value === 'MI' && document.getElementById('s1_n2').value === 'LA' && document.getElementById('s1_n3').value === 'DO' && document.getElementById('s1_n4').value === 'SI';
+                if (nOk) pts += 2;
+                showFeedback('res_s1_1', nOk, 'Ordre correcte: 1: MI (1a línia), 2: LA (2n espai), 3: DO (amb ratlleta), 4: SI (3a línia).', 'Orden correcto: 1: MI (1ª línea), 2: LA (2º espacio), 3: DO (con rayita), 4: SI (3ª línea).');
+
+                const q2 = document.getElementById('s1_2').value === 'ok'; if (q2) pts += 2;
+                showFeedback('res_s1_2', q2, 'El so és la sensació que sentim quan arriben a l\'orella les ones produïdes per la vibració d\'un cos sonor.', 'El sonido es la sensación que sentimos cuando llegan al oído las ondas producidas por la vibración de un cuerpo sonoro.');
+
+                const q3 = document.getElementById('s1_3').value === 'ok'; if (q3) pts += 2;
+                showFeedback('res_s1_3', q3, 'La membrana elàstica de l\'orella es diu timpà.', 'La membrana elástica del oído se llama tímpano.');
+
+                const q4 = document.getElementById('s1_4').value === 'ok'; if (q4) pts += 2;
+                showFeedback('res_s1_4', q4, 'L\'ona del so és ordenada i regular; la del soroll és desordenada i irregular.', 'La onda del sonido es ordenada y regular; la del ruido es desordenada e irregular.');
+
+                const q5 = document.getElementById('s1_5').value === 'ok'; if (q5) pts += 2;
+                showFeedback('res_s1_5', q5, 'Es mesura amb el sonòmetre en decibels (dB).', 'Se mide con el sonómetro en decibelios (dB).');
+            } else if (num === 2) {
+                const nOk = document.getElementById('s2_n1').value === 'SOL' && document.getElementById('s2_n2').value === 'RE' && document.getElementById('s2_n3').value === "DO'" && document.getElementById('s2_n4').value === 'FA';
+                if (nOk) pts += 2;
+                showFeedback('res_s2_1', nOk, 'Ordre correcte: 1: SOL (2a línia), 2: RE (sota 1a línia), 3: DO\' (3r espai), 4: FA (1r espai).', 'Orden correcto: 1: SOL (2ª línea), 2: RE (bajo 1ª línea), 3: DO\' (3er espacio), 4: FA (1er espacio).');
+
+                const q2 = document.getElementById('s2_2').value === 'ok'; if (q2) pts += 2;
+                showFeedback('res_s2_2', q2, 'Les ones sonores viatgen per medis com l\'aire, l\'aigua o la fusta.', 'Las ondas sonoras viajan por medios como el aire, el agua o la madera.');
+
+                const q3 = document.getElementById('s2_3').value === 'ok'; if (q3) pts += 2;
+                showFeedback('res_s2_3', q3, 'Les cordes o la membrana vibren i produeixen so.', 'Las cuerdas o la membrana vibran y producen sonido.');
+
+                const q4 = document.getElementById('s2_4').value === 'ok'; if (q4) pts += 2;
+                showFeedback('res_s2_4', q4, 'La contaminació acústica és l\'excés de soroll i el límit de l\'OMS és 65 dB.', 'La contaminación acústica es el exceso de ruido y el límite de la OMS es 65 dB.');
+
+                const q5 = document.getElementById('s2_5').value === 'ok'; if (q5) pts += 2;
+                showFeedback('res_s2_5', q5, 'Produeix trastorns del son, estrés i pèrdua auditiva.', 'Produce trastornos del sueño, estrés y pérdida auditiva.');
+            } else if (num === 3) {
+                const nOk = document.getElementById('s3_n1').value === 'SI' && document.getElementById('s3_n2').value === 'DO' && document.getElementById('s3_n3').value === 'LA' && document.getElementById('s3_n4').value === 'MI';
+                if (nOk) pts += 2;
+                showFeedback('res_s3_1', nOk, 'Ordre correcte: 1: SI (3a línia), 2: DO (amb ratlleta), 3: LA (2n espai), 4: MI (1a línia).', 'Orden correcto: 1: SI (3ª línea), 2: DO (con rayita), 3: LA (2º espacio), 4: MI (1ª línea).');
+
+                const q2 = document.getElementById('s3_2').value === 'ok'; if (q2) pts += 2;
+                showFeedback('res_s3_2', q2, 'La vibració es transmet en forma d\'ones que es mouen per l\'aire com les ondulacions de l\'aigua.', 'La vibración se transmite en forma de ondas que se mueven por el aire como las ondulaciones del agua.');
+
+                const q3 = document.getElementById('s3_3').value === 'ok'; if (q3) pts += 2;
+                showFeedback('res_s3_3', q3, 'El timpà vibra i transmet aquesta informació al cervell.', 'El tímpano vibra y transmite esta información al cerebro.');
+
+                const q4 = document.getElementById('s3_4').value === 'ok'; if (q4) pts += 2;
+                showFeedback('res_s3_4', q4, 'Les fonts principals són els mitjans de transport, l\'activitat industrial, la construcció i les zones d\'oci.', 'Las fuentes principales son los medios de transporte, la actividad industrial, la construcción y las zonas de ocio.');
+
+                const q5 = document.getElementById('s3_5').value === 'ok'; if (q5) pts += 2;
+                showFeedback('res_s3_5', q5, 'Demostra que es pot convertir el soroll extramusical en una obra d\'art.', 'Demuestra que se puede convertir el ruido extramusical en una obra de arte.');
+            }
+
+            showBadgeScore('score-sim-' + num, pts, 10);
+            if (pts >= 6) {
+                const medal = document.getElementById('medal-' + num);
+                medal.classList.remove('bg-slate-200', 'text-slate-500');
+                medal.classList.add('bg-amber-400', 'text-amber-950', 'shadow-sm');
+            }
+        }
+
+        // --- AUDIO SINTETIZADO CON TONE.JS PARA LA FLAUTA ---
+        let synth = null;
+        async function ensureAudio() {
+            await Tone.start();
+            if (!synth) {
+                synth = new Tone.Synth({
+                    oscillator: { type: 'sine' },
+                    envelope: { attack: 0.05, decay: 0.1, sustain: 0.8, release: 0.3 }
+                }).toDestination();
+            }
+        }
+
+        async function playSingleNote(note) {
+            await ensureAudio();
+            synth.triggerAttackRelease(note, '4n');
+        }
+
+        async function playSequence(notesArr) {
+            await ensureAudio();
+            const now = Tone.now();
+            let offset = 0;
+            notesArr.forEach(([note, dur, sec]) => {
+                synth.triggerAttackRelease(note, dur, now + offset);
+                offset += sec;
+            });
+        }
+
+        function playPhrase(num) {
+            if (num === 1) {
+                playSequence([
+                    ['C4', '4n', 0.5], ['D4', '4n', 0.5], ['E4', '4n', 0.5], ['C4', '4n', 0.5],
+                    ['C4', '4n', 0.5], ['D4', '4n', 0.5], ['E4', '4n', 0.5], ['C4', '4n', 0.5]
+                ]);
+            } else if (num === 2) {
+                playSequence([
+                    ['E4', '4n', 0.5], ['F4', '4n', 0.5], ['G4', '2n', 1.0],
+                    ['E4', '4n', 0.5], ['F4', '4n', 0.5], ['G4', '2n', 1.0]
+                ]);
+            } else if (num === 3) {
+                playSequence([
+                    ['G4', '8n', 0.25], ['A4', '8n', 0.25], ['G4', '8n', 0.25], ['F4', '8n', 0.25], ['E4', '4n', 0.5], ['C4', '4n', 0.5],
+                    ['G4', '8n', 0.25], ['A4', '8n', 0.25], ['G4', '8n', 0.25], ['F4', '8n', 0.25], ['E4', '4n', 0.5], ['C4', '4n', 0.5]
+                ]);
+            } else if (num === 4) {
+                playSequence([
+                    ['C4', '4n', 0.5], ['G3', '4n', 0.5], ['C4', '2n', 1.0],
+                    ['C4', '4n', 0.5], ['G3', '4n', 0.5], ['C4', '2n', 1.0]
+                ]);
+            }
+        }
+
+        function playFullLechuza() {
+            playSequence([
+                ['C4', '4n', 0.45], ['D4', '4n', 0.45], ['E4', '4n', 0.45], ['C4', '4n', 0.45],
+                ['C4', '4n', 0.45], ['D4', '4n', 0.45], ['E4', '4n', 0.45], ['C4', '4n', 0.45],
+                ['E4', '4n', 0.45], ['F4', '4n', 0.45], ['G4', '2n', 0.9],
+                ['E4', '4n', 0.45], ['F4', '4n', 0.45], ['G4', '2n', 0.9],
+                ['G4', '8n', 0.22], ['A4', '8n', 0.22], ['G4', '8n', 0.22], ['F4', '8n', 0.22], ['E4', '4n', 0.45], ['C4', '4n', 0.45],
+                ['G4', '8n', 0.22], ['A4', '8n', 0.22], ['G4', '8n', 0.22], ['F4', '8n', 0.22], ['E4', '4n', 0.45], ['C4', '4n', 0.45],
+                ['C4', '4n', 0.45], ['G3', '4n', 0.45], ['C4', '2n', 0.9],
+                ['C4', '4n', 0.45], ['G3', '4n', 0.45], ['C4', '2n', 0.9]
+            ]);
+        }
+
+        // Inicializar portada general al cargar
+        renderSubjectsHub();
+    </script>
+</body>
+</html>
